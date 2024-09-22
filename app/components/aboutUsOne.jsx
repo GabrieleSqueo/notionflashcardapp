@@ -32,10 +32,10 @@ const AboutUsOne = () => {
               Our Story
             </h3>
             <p className="text-gray-300 text-lg leading-relaxed">
-              We're two friends from Apulia, Italy, who met in high school and bonded over our shared passion for coding and business. As we grew, our conversations evolved from typical teenage topics to exciting discussions about entrepreneurship, coding, and marketing.
+              We&apos;re two friends from Apulia, Italy, who met in high school and bonded over our shared passion for coding and business. As we grew, our conversations evolved from typical teenage topics to exciting discussions about entrepreneurship, coding, and marketing.
             </p>
             <p className="text-gray-300 text-lg leading-relaxed">
-              In 2024, we decided to embark on a journey together, building our SaaS products in public. Crammate is our first creation, and while we're uncertain about its future or what we'll build next, we're thrilled about the learning experience and the adventures that lie ahead.
+              In 2024, we decided to embark on a journey together, building our SaaS products in public. Crammate is our first creation, and while we&apos;re uncertain about its future or what we&apos;ll build next, we&apos;re thrilled about the learning experience and the adventures that lie ahead.
             </p>
             <div className="pt-6">
               <h4 className="text-2xl font-semibold text-white mb-6">Follow Our Journey</h4>
