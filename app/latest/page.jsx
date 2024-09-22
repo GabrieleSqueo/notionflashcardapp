@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '../utils/supabase/server'
 import { logout } from './actions'
-import NotionConnect from '../components/NotionConnect'
+import NotionConnect from './components/NotionConnect'
 
 export default async function HomePage() {
     const supabase = createClient()
