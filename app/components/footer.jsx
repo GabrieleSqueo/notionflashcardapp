@@ -1,4 +1,5 @@
 import Marquee from 'react-fast-marquee';
+import Link from 'next/link';
 import Script from 'next/script';
 
 const Footer = () => {
@@ -36,6 +37,9 @@ const Footer = () => {
         >
           Cookie Policy
         </a>
+        <Link href="/terms-and-conditions" className="text-blue-500 hover:text-blue-700">
+          Terms and Conditions
+        </Link>
       </div>
       <Script 
         id="iubenda-script"
