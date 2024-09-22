@@ -40,7 +40,7 @@ const Problem = ({ backgroundColor }) => {
               whileInView={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              If you&apos;re like many students and professionals, your Notion workspace is full of notes, but studying and retaining that information feels like a struggle. You&apos;ve tried different methods—flashcard apps, separate tools, even traditional notecards— <strong className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">but nothing sticks.</strong> Constantly switching between tools adds frustration, making the process disjointed.
+              If you're like many students and professionals, your Notion workspace is full of notes, but studying and retaining that information feels like a struggle. You've tried different methods—flashcard apps, separate tools, even traditional notecards— <strong className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">but nothing sticks.</strong> Constantly switching between tools adds frustration, making the process disjointed.
             </motion.p>
             <motion.p
               initial={{ opacity: 0 }}
@@ -101,7 +101,7 @@ const Problem = ({ backgroundColor }) => {
                 </ul>
               </div>
               <p className="text-center text-lg">
-                Don&apos;t let this opportunity slip away! Join now and transform your Notion workspace into a powerful learning engine.
+                Don't let this opportunity slip away! Join now and transform your Notion workspace into a powerful learning engine.
               </p>
               <div className="text-center">
                 <p className="text-xl font-semibold mb-2">Time is running out!</p>

@@ -69,7 +69,7 @@ const Navbarone = () => {
               </ul>
             </div>
             <p className="text-center text-lg">
-              Don&apos;t let this opportunity slip away! Join now and transform your Notion workspace into a powerful learning engine.
+              Don't let this opportunity slip away! Join now and transform your Notion workspace into a powerful learning engine.
             </p>
             <div className="text-center">
               <p className="text-xl font-semibold mb-2">Time is running out!</p>
