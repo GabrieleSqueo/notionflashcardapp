@@ -16,12 +16,12 @@ export async function POST(request) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Basic ${Buffer.from(`${process.env.NOTION_CLIENT_ID}:${process.env.NOTION_CLIENT_SECRET}`).toString('base64')}`
+            'Authorization': `Basic ${Buffer.from(`${process.env.OAUTH_CLIENT_ID}:${process.env.INTERNAL_NOTION_KEY}`).toString('base64')}`
         },
         body: JSON.stringify({
             grant_type: 'authorization_code',
             code,
-            redirect_uri: process.env.NOTION_REDIRECT_URI
+            redirect_uri: process.env.OAUTH_REDIRECT_URI
         })
     });
 
