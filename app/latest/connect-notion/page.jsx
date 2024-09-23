@@ -17,8 +17,11 @@ const ConnectNotion = () => {
         try {
             // Call our own API route to initiate Notion OAuth flow
             const response = await fetch("/api/initiate-notion-oauth");
+            if (!response.ok) {
+                throw new Error('Failed to initiate Notion OAuth');
+            }
+
             const data = await response.json();
-            console.log(data)
             if (data.error) throw new Error(data.error);
 
             // Redirect to Notion authorization page
