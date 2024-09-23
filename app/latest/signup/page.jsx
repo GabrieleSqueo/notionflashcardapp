@@ -1,9 +1,11 @@
 'use client'
 import { useState } from 'react'
 import { createClient } from '../../utils/supabase/client'
+import { useRouter } from 'next/navigation'
 
 export default function SignupPage() {
   const supabase = createClient()
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     email: '',
@@ -35,7 +37,8 @@ export default function SignupPage() {
 
       if (authError) throw authError
 
-      alert('Signup successful! Please check your email to confirm your account.')
+      alert('Signup successful! Now you can login')
+      router.push('/login')
     } catch (error) {
       console.error('Error signing up:', error.message)
       alert('Error signing up: ' + error.message)
