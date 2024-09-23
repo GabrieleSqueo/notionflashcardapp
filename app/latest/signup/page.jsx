@@ -8,8 +8,7 @@ export default function SignupPage() {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    username: '',
-    notion_key: ''
+    username: ''
   })
 
   const handleChange = (e) => {
@@ -21,7 +20,7 @@ export default function SignupPage() {
     e.preventDefault()
     setLoading(true)
     try {
-      const { email, password, username, notion_key } = formData
+      const { email, password, username } = formData
 
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
@@ -29,7 +28,7 @@ export default function SignupPage() {
         options: {
           data: {
             username,
-            notion_key
+            notion_key: "" // Set notion_key to an empty string
           }
         }
       })
@@ -81,18 +80,6 @@ export default function SignupPage() {
               name="username"
               type="text"
               value={formData.username}
-              onChange={handleChange}
-              required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-black"
-            />
-          </div>
-          <div>
-            <label htmlFor="notion_key" className="block text-sm font-medium text-gray-700">Notion Key</label>
-            <input
-              id="notion_key"
-              name="notion_key"
-              type="text"
-              value={formData.notion_key}
               onChange={handleChange}
               required
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-black"
