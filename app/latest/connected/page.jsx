@@ -2,12 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 export default function ConnectedPage() {
   const [status, setStatus] = useState('Processing...');
   const router = useRouter();
-  const supabase = createClientComponentClient();
 
   useEffect(() => {
     const handleNotionCallback = async () => {
@@ -32,30 +30,12 @@ export default function ConnectedPage() {
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.message || 'Failed to exchange code for token');
+          throw new Error(errorData.message || 'Failed to connect to Notion');
         }
 
-        const { access_token } = await response.json();
+        const { message } = await response.json();
 
-        // Save the token in Supabase
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        if (userError || !user) {
-          throw new Error('No authenticated user found');
-        }
-
-        const { error } = await supabase
-          .from('user_integrations')
-          .upsert({ 
-            user_id: user.id, 
-            integration_type: 'notion', 
-            access_token 
-          }, { onConflict: 'user_id,integration_type' });
-
-        if (error) {
-          throw error;
-        }
-
-        setStatus('Successfully connected to Notion!');
+        setStatus(message || 'Successfully connected to Notion!');
         // Redirect to dashboard or home page after a short delay
         setTimeout(() => router.push('/latest'), 2000);
       } catch (error) {
@@ -65,7 +45,7 @@ export default function ConnectedPage() {
     };
 
     handleNotionCallback();
-  }, [router, supabase]);
+  }, [router]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
