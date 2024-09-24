@@ -1,17 +1,5 @@
-import localFont from "next/font/local";
 import "./globals.css";
 import { Metadata } from "./metadata";
-
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
 
 export const metadata = {
   title: "Create Next App",
@@ -57,11 +45,6 @@ export default function RootLayout({ children }) {
         {/* Schema.org JSON-LD */}
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(Metadata.jsonLd) }} />
 
-        {/* Preconnect e Preload per migliorare la performance */}
-        <link rel="preconnect" href="https://fonts.gstatic.com" />
-        <link rel="preload" href="./fonts/GeistVF.woff" as="font" type="font/woff" crossOrigin="anonymous" />
-        <link rel="preload" href="./fonts/GeistMonoVF.woff" as="font" type="font/woff" crossOrigin="anonymous" />
-
         {/* Apple Icons e altre icone */}
         {Metadata.appleTouchIcons.map((icon) => (
           <link key={icon.sizes} rel={icon.rel} sizes={icon.sizes} href={icon.href} />
@@ -74,7 +57,7 @@ export default function RootLayout({ children }) {
         <link rel="canonical" href={Metadata.meta.ogUrl} />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`antialiased`}
       >
         {children}
       </body>

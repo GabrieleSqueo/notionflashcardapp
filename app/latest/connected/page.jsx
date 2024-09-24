@@ -12,7 +12,6 @@ export default function ConnectedPage() {
     const handleNotionCallback = async () => {
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get('code');
-      console.log("code: " + code);
 
       if (!code) {
         setStatus('Error: No code found in URL');
@@ -30,7 +29,6 @@ export default function ConnectedPage() {
         });
 
         const data = await response.json();
-        console.log("data: " + data);
 
         if (!response.ok) {
           throw new Error(data.message || `HTTP error! status: ${response.status}`);
