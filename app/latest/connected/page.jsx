@@ -23,21 +23,26 @@ export default function ConnectedPage() {
         const response = await fetch('/api/notiontoken', {
           method: 'POST',
           headers: {
+            'Accept': 'application/json',
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ code }),
         });
 
         if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || 'Failed to connect to Notion');
+          const errorText = await response.text();
+          throw new Error(`Error connecting to Notion: ${errorText}`);
         }
 
-        const { message } = await response.json();
+        const data = await response.json();
 
-        setStatus(message || 'Successfully connected to Notion!');
-        // Redirect to dashboard or home page after a short delay
-        setTimeout(() => router.push('/latest'), 2000);
+        if (data.message) {
+          setStatus(data.message);
+          // Redirect to dashboard or home page after a short delay
+          setTimeout(() => router.push('/latest'), 2000);
+        } else {
+          throw new Error('Unexpected response from server');
+        }
       } catch (error) {
         console.error('Error:', error);
         setStatus(`Error: ${error.message}`);
