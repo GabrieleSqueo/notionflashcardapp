@@ -9,7 +9,6 @@ export default function ConnectedPage() {
 
   useEffect(() => {
     const handleNotionCallback = async () => {
-      // Extract the code from the URL
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get('code');
 
@@ -19,7 +18,6 @@ export default function ConnectedPage() {
       }
 
       try {
-        // Make a POST request to the /api/notiontoken endpoint
         const response = await fetch('/api/notiontoken', {
           method: 'POST',
           headers: {
@@ -29,23 +27,25 @@ export default function ConnectedPage() {
           body: JSON.stringify({ code }),
         });
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`Error connecting to Notion: ${errorText}`);
-        }
-
         const data = await response.json();
 
-        if (data.message) {
+        if (!response.ok) {
+          throw new Error(data.message || `HTTP error! status: ${response.status}`);
+        }
+
+        if (data.success) {
           setStatus(data.message);
-          // Redirect to dashboard or home page after a short delay
           setTimeout(() => router.push('/latest'), 2000);
         } else {
-          throw new Error('Unexpected response from server');
+          throw new Error(data.message || 'Unexpected response from server');
         }
       } catch (error) {
         console.error('Error:', error);
         setStatus(`Error: ${error.message}`);
+        if (error.message === 'User not authenticated') {
+          // Redirect to login page or show login prompt
+          setTimeout(() => router.push('/login'), 2000);
+        }
       }
     };
 

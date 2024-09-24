@@ -8,7 +8,19 @@ export async function POST(request) {
         const { code } = await request.json();
 
         if (!code) {
-            throw new Error('Authorization code is required');
+            return NextResponse.json({ success: false, message: 'Authorization code is required' }, { status: 400 });
+        }
+
+        // Get the user from the session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+            console.error('Session error:', sessionError);
+            return NextResponse.json({ success: false, message: 'Error fetching user session' }, { status: 401 });
+        }
+
+        if (!session || !session.user) {
+            return NextResponse.json({ success: false, message: 'User not authenticated' }, { status: 401 });
         }
 
         // Parametri di configurazione per la richiesta di token OAuth di Notion
@@ -40,22 +52,15 @@ export async function POST(request) {
         const tokenData = await response.json();
         const notionKey = tokenData.access_token;
 
-        // Get the user from the session
-        const { data: { session } } = await supabase.auth.getSession();
-        const user = session?.user;
-
-        if (!user) {
-            throw new Error('User not authenticated');
-        }
-
         // Update the user's notion_key in the database
         const { error: dbError } = await supabase
             .from('user_data')
             .update({ notion_key: notionKey })
-            .eq('user_id', user.id);
+            .eq('user_id', session.user.id);
 
         if (dbError) {
-            throw new Error(dbError.message || 'Failed to update notion_key');
+            console.error('Database error:', dbError);
+            return NextResponse.json({ success: false, message: 'Failed to update notion_key' }, { status: 500 });
         }
 
         return NextResponse.json({ success: true, message: 'Notion key updated successfully' });
