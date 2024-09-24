@@ -13,8 +13,21 @@ export default async function HomePage() {
         redirect('/latest/login')
     }
 
-    // TODO: Replace this with actual Notion connection check
-    const isNotionConnected = false
+    // Log the user data to see the parameters
+    console.log("User Data:", data.user)
+
+    // Check if the user has a Notion key
+    const { data: userData, error: userError } = await supabase
+        .from('user_data')
+        .select('notion_key')
+        .eq('user_id', data.user.id)
+        .single()
+
+    if (userError) {
+        console.error('Error fetching user data:', userError)
+    }
+
+    const isNotionConnected = !!userData?.notion_key
 
     return (
         <div className="min-h-screen bg-gray-100">

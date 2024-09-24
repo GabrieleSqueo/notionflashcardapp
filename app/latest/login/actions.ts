@@ -42,23 +42,23 @@ export async function signup(formData: FormData) {
   const data = {
     email: formData.get('email') as string,
     password: formData.get('password') as string,
+    username: formData.get('username') as string,
   }
 
-  const { data: sessionData, error } = await supabase.auth.signUp(data)
-
-  if (error) {
-    redirect('/error')
-  }
-
-  if (sessionData?.session) {
-    cookies().set('supabase-auth-token', sessionData.session.access_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 60 * 60 * 24 * 7, // 1 week
-      path: '/',
+  // Insert the user data into the user_data table
+  const { error: dbError } = await supabase
+    .from('user_data')
+    .insert({
+      email: data.email,
+      password: data.password, // Note: Storing passwords in plain text is not secure. Use hashing in a real application.
+      username: data.username,
+      notion_key: "" // Set notion_key to an empty string
     })
+
+  if (dbError) {
+    console.error('Database error:', dbError)
+    redirect('/latest/error')
   }
 
-  revalidatePath('/', 'layout')
-  redirect('/latest')
+  redirect('/latest/login')
 }
