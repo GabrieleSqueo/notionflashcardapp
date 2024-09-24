@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 export default function ConnectedPage() {
   const [status, setStatus] = useState('Processing...');
   const router = useRouter();
+  const supabase = createClientComponentClient();
 
   useEffect(() => {
     const handleNotionCallback = async () => {
@@ -18,11 +20,18 @@ export default function ConnectedPage() {
       }
 
       try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          throw new Error('User not authenticated');
+        }
+
         const response = await fetch('/api/notiontoken', {
           method: 'POST',
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({ code }),
         });
@@ -43,14 +52,13 @@ export default function ConnectedPage() {
         console.error('Error:', error);
         setStatus(`Error: ${error.message}`);
         if (error.message === 'User not authenticated') {
-          // Redirect to login page or show login prompt
-          setTimeout(() => router.push('/login'), 2000);
+          setTimeout(() => router.push('/latest/login'), 2000);
         }
       }
     };
 
     handleNotionCallback();
-  }, [router]);
+  }, [router, supabase]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">

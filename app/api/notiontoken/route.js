@@ -6,20 +6,21 @@ const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.
 export async function POST(request) {
     try {
         const { code } = await request.json();
+        const authHeader = request.headers.get('Authorization');
 
         if (!code) {
             return NextResponse.json({ success: false, message: 'Authorization code is required' }, { status: 400 });
         }
 
-        // Get the user from the session
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError) {
-            console.error('Session error:', sessionError);
-            return NextResponse.json({ success: false, message: 'Error fetching user session' }, { status: 401 });
+        if (!authHeader) {
+            return NextResponse.json({ success: false, message: 'Authorization header is missing' }, { status: 401 });
         }
 
-        if (!session || !session.user) {
+        const token = authHeader.split(' ')[1];
+        const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
+        if (authError || !user) {
+            console.error('Auth error:', authError);
             return NextResponse.json({ success: false, message: 'User not authenticated' }, { status: 401 });
         }
 
@@ -56,7 +57,7 @@ export async function POST(request) {
         const { error: dbError } = await supabase
             .from('user_data')
             .update({ notion_key: notionKey })
-            .eq('user_id', session.user.id);
+            .eq('user_id', user.id);
 
         if (dbError) {
             console.error('Database error:', dbError);
