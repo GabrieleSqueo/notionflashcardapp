@@ -1,28 +1,23 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+import { createClient } from '../../utils/supabase/server';
 
 export async function POST(request) {
+    const supabase = createClient();
+
     try {
         const { code } = await request.json();
-        const authHeader = request.headers.get('Authorization');
 
         if (!code) {
             return NextResponse.json({ success: false, message: 'Authorization code is required' }, { status: 400 });
         }
 
-        if (!authHeader) {
-            return NextResponse.json({ success: false, message: 'Authorization header is missing' }, { status: 401 });
-        }
-
-        const token = authHeader.split(' ')[1];
-        const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-
-        if (authError || !user) {
-            console.error('Auth error:', authError);
+        const { data, error: supabaseError } = await supabase.auth.getUser();
+        if (supabaseError || !data?.user) {
+            console.error('Auth error:', supabaseError);
             return NextResponse.json({ success: false, message: 'User not authenticated' }, { status: 401 });
         }
+
+        const user = data.user;
 
         // Parametri di configurazione per la richiesta di token OAuth di Notion
         const clientId = process.env.OAUTH_CLIENT_ID;
