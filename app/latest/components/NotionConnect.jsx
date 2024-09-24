@@ -1,7 +1,37 @@
-import React from 'react'
+'use client'
+
+import React, { useState } from 'react'
 import Link from 'next/link'
 
 const NotionConnect = ({ isConnected }) => {
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState(null)
+
+  const handleConnectNotion = async (e) => {
+    e.preventDefault()
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      // Call our own API route to initiate Notion OAuth flow
+      const response = await fetch("/api/initiate-notion-oauth");
+      if (!response.ok) {
+        throw new Error('Failed to initiate Notion OAuth');
+      }
+
+      const data = await response.json();
+      if (data.error) throw new Error(data.error);
+
+      // Redirect to Notion authorization page
+      window.location.href = data.authorizationUrl;
+    } catch (err) {
+      console.error('Error connecting to Notion:', err)
+      setError('Failed to connect to Notion. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
     <div className="bg-white overflow-hidden shadow rounded-lg">
       <div className="px-4 py-5 sm:p-6">
@@ -24,6 +54,9 @@ const NotionConnect = ({ isConnected }) => {
         </div>
       </div>
       <div className="bg-gray-50 px-4 py-4 sm:px-6">
+        {error && (
+          <div className="mb-2 text-red-600 text-sm">{error}</div>
+        )}
         {isConnected ? (
           <div className="text-sm">
             <Link href="/latest/notion-settings" className="font-medium text-indigo-600 hover:text-indigo-500">
@@ -32,9 +65,13 @@ const NotionConnect = ({ isConnected }) => {
           </div>
         ) : (
           <div className="text-sm">
-            <Link href="/latest/connect-notion" className="font-medium text-indigo-600 hover:text-indigo-500">
-              Connect Notion workspace
-            </Link>
+            <button
+              onClick={handleConnectNotion}
+              disabled={isLoading}
+              className="font-medium text-indigo-600 hover:text-indigo-500 disabled:text-gray-400"
+            >
+              {isLoading ? 'Connecting...' : 'Connect Notion workspace'}
+            </button>
           </div>
         )}
       </div>
