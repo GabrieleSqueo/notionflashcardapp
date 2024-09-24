@@ -13,6 +13,7 @@ export default function ConnectedPage() {
     const handleNotionCallback = async () => {
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get('code');
+      console.log(code);
 
       if (!code) {
         setStatus('Error: No code found in URL');
@@ -20,9 +21,10 @@ export default function ConnectedPage() {
       }
 
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        console.log(session);
         
-        if (!session) {
+        if (sessionError || !session) {
           throw new Error('User not authenticated');
         }
 
@@ -31,12 +33,12 @@ export default function ConnectedPage() {
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({ code }),
         });
 
         const data = await response.json();
+        console.log(data);
 
         if (!response.ok) {
           throw new Error(data.message || `HTTP error! status: ${response.status}`);
