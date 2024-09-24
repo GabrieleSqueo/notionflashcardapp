@@ -8,6 +8,10 @@ export async function GET() {
 }
 
 export async function POST(request) {
+  // First, call the GET function to get the authorization URL
+  const { authorizationUrl } = await GET();
+
+  // Now proceed with the POST logic
   const { code } = await request.json();
 
   if (!code) {
@@ -29,5 +33,5 @@ export async function POST(request) {
   }
 
   const data = await response.json();
-  return NextResponse.json(data);
+  return NextResponse.json({ ...data, authorizationUrl });
 }
