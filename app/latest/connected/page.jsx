@@ -53,9 +53,6 @@ export default function ConnectedPage() {
       } catch (error) {
         console.error('Error:', error);
         setStatus(`Error: ${error.message}`);
-        if (error.message === 'User not authenticated') {
-          setTimeout(() => router.push('/latest/login'), 2000);
-        }
       }
     };
 
