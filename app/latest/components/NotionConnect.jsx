@@ -20,6 +20,7 @@ const NotionConnect = ({ isConnected }) => {
       }
 
       const data = await response.json();
+      console.log(data);
       if (data.error) throw new Error(data.error);
 
       // Redirect to Notion authorization page

@@ -10,9 +10,7 @@ export async function GET() {
 export async function POST(request) {
   // First, call the GET function to get the authorization URL
   const { authorizationUrl } = await GET();
-
-  // Now proceed with the POST logic
-  const { code } = await request.json();
+  console.log(authorizationUrl);
 
   if (!code) {
     return NextResponse.json({ error: 'Authorization code is required' }, { status: 400 });
