@@ -1,5 +1,4 @@
 'use client';
-
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
@@ -21,13 +20,6 @@ export default function ConnectedPage() {
       }
 
       try {
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        console.log("session: " + session);
-        
-        if (sessionError || !session) {
-          throw new Error('User not authenticated');
-        }
-
         const response = await fetch('/api/notiontoken', {
           method: 'POST',
           headers: {
