@@ -73,7 +73,16 @@ export async function POST(request) {
             return NextResponse.json({ success: true, pages: formattedPages });
         } else if (action === 'createPage' && pageId) {
             const pageTitle = `${selectedPageName} flashcards`; // Use the selected page name and append "flashcards"
-        
+
+            // Array of random background URLs (you can replace these with actual Notion-compatible image URLs)
+            const backgroundUrls = [
+                "https://www.notion.so/images/page-cover/solid_blue.png",
+                "https://www.notion.so/images/page-cover/gradients_10.jpg",
+                "https://www.notion.so/images/page-cover/met_william_morris_1877_willow.jpg",
+                "https://www.notion.so/images/page-cover/woodcuts_3.jpg"
+            ];
+            const randomBackground = backgroundUrls[Math.floor(Math.random() * backgroundUrls.length)];
+
             const response = await fetch('https://api.notion.com/v1/pages', {
                 method: 'POST',
                 headers: {
@@ -83,6 +92,16 @@ export async function POST(request) {
                 },
                 body: JSON.stringify({
                     parent: { page_id: pageId },
+                    icon: {
+                        type: "emoji",
+                        emoji: "🦄"
+                    },
+                    cover: {
+                        type: "external",
+                        external: {
+                            url: randomBackground
+                        }
+                    },
                     properties: {
                         title: [
                             {
@@ -95,13 +114,20 @@ export async function POST(request) {
                     children: [ // Add children to the page
                         {
                             object: 'block',
+                            type: 'heading_2',
+                            heading_2: {
+                                text: [{ type: 'text', text: { content: 'Here you can write your flashcards' } }]
+                            }
+                        },
+                        {
+                            object: 'block',
                             type: 'paragraph',
                             paragraph: {
                                 text: [
                                     {
                                         type: 'text',
                                         text: {
-                                            content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+                                            content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
                                         },
                                     },
                                 ],
@@ -117,12 +143,12 @@ export async function POST(request) {
                     ],
                 }),
             });
-        
+
             if (!response.ok) {
                 const errorText = await response.text();
                 throw new Error(`Error creating Notion page: ${errorText}`);
             }
-        
+
             return NextResponse.json({ success: true, message: 'Notion page created successfully!' });
         } else {
             return NextResponse.json({ success: false, message: 'Invalid action or missing pageId' }, { status: 400 });
