@@ -140,7 +140,7 @@ export async function POST(request) {
                             object: 'block',
                             type: 'embed',
                             embed: {
-                                url: 'https://notionflashcard.com',
+                                url: 'https://notionflashcard.com/embed/3d3bf686-5de3-4028-924a-444b25c961a2',
                             },
                         },
                     ],
