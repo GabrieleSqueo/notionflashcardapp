@@ -7,7 +7,7 @@ export default async function EmbedPage({ params }) {
 
 	const { data, error: supabaseError } = await supabase.auth.getUser()
 	if (supabaseError || !data?.user) {
-		redirect('/latest/login')
+		redirect(`/latest/login?from_embed=${params.embed_id}`)
 	}
 
 	return <EmbeddedComponent embed_id={params.embed_id} />

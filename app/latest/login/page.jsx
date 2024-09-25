@@ -1,12 +1,16 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { login, signup } from './actions'
 import Link from 'next/link'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true)
   const [error, setError] = useState(null)
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const fromEmbed = searchParams.get('from_embed')
 
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -16,8 +20,14 @@ export default function LoginPage() {
     try {
       if (isLogin) {
         await login(formData)
+        if (fromEmbed) {
+          router.push(`/embed/${fromEmbed}`)
+        } else {
+          router.push('/latest')
+        }
       } else {
         await signup(formData)
+        router.push('/latest')
       }
     } catch (e) {
       setError(e.message)
