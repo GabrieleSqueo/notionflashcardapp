@@ -1,6 +1,6 @@
 import { createClient } from '../../utils/supabase/server'
 import { redirect } from 'next/navigation'
-import FlashcardEmbed from './flashcardEmbed'
+import EmbeddedComponent from './embeddedComponent'
 
 export default async function EmbedPage({ params }) {
 	const supabase = createClient()
@@ -10,5 +10,5 @@ export default async function EmbedPage({ params }) {
 		redirect('/latest/login')
 	}
 
-	return <FlashcardEmbed embed_id={params.embed_id} />
+	return <EmbeddedComponent embed_id={params.embed_id} />
 }
