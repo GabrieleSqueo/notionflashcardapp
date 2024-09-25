@@ -4,8 +4,9 @@ import { useState, useEffect } from 'react';
 
 export default function NewProjectPage() {
   const [status, setStatus] = useState('');
-  const [pages, setPages] = useState([]);
+  const [pages, setPages] = useState([]); // Ensure this is initialized as an empty array
   const [selectedPageId, setSelectedPageId] = useState('');
+  const [selectedPageName, setSelectedPageName] = useState(''); // New state for selected page name
 
   useEffect(() => {
     const fetchPages = async () => {
@@ -25,7 +26,7 @@ export default function NewProjectPage() {
           throw new Error(result.message || `HTTP error! status: ${response.status}`);
         }
 
-        setPages(result.pages.results);
+        setPages(result.pages); // Set pages directly from the result
         setStatus('');
       } catch (error) {
         console.error('Error:', error);
@@ -49,7 +50,11 @@ export default function NewProjectPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ action: 'createPage', pageId: selectedPageId }),
+        body: JSON.stringify({ 
+          action: 'createPage', 
+          pageId: selectedPageId,
+          selectedPageName: selectedPageName // Pass the selected page name
+        }),
       });
 
       const result = await response.json();
@@ -78,12 +83,16 @@ export default function NewProjectPage() {
             name="pages"
             className="text-black mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
             value={selectedPageId}
-            onChange={(e) => setSelectedPageId(e.target.value)}
+            onChange={(e) => {
+              const selectedPage = pages.find(page => page.id === e.target.value);
+              setSelectedPageId(e.target.value);
+              setSelectedPageName(selectedPage ? selectedPage.title : ''); // Set the selected page name
+            }}
           >
             <option value="">-- Select a page --</option>
             {pages.map((page) => (
               <option key={page.id} value={page.id}>
-                {page.properties?.Name?.title?.[0]?.text?.content || 'Untitled'}
+                {page.title || 'Untitled'} {/* Access the title directly */}
               </option>
             ))}
           </select>

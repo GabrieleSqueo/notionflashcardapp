@@ -5,7 +5,8 @@ export async function POST(request) {
     const supabase = createClient();
 
     try {
-        const { action, pageId } = await request.json();
+        const requestBody = await request.json(); // Read the request body once
+        const { action, pageId, selectedPageName } = requestBody; // Extract all needed data
 
         const { data, error: supabaseError } = await supabase.auth.getUser();
 
@@ -36,7 +37,7 @@ export async function POST(request) {
                     'Notion-Version': '2021-05-13',
                 },
                 body: JSON.stringify({
-                    query: '',
+                    query: '', // Empty query to fetch all pages
                     sort: {
                         direction: 'ascending',
                         timestamp: 'last_edited_time',
@@ -54,10 +55,25 @@ export async function POST(request) {
             }
 
             const pages = await response.json();
-            console.log("PAGES", JSON.stringify(pages, null, 2));
-            return NextResponse.json({ success: true, pages });
+            console.log("----PAGES: ", JSON.stringify(pages, null, 2));
+            const formattedPages = pages.results.map(page => {
+                // Check for title under both "title" and "Name"
+                const titleProperty = page.properties.title || page.properties.Name;
+                const title = titleProperty && titleProperty.title && titleProperty.title.length > 0 
+                    ? titleProperty.title[0].text.content // Correct path to the title
+                    : 'Untitled'; // Safely access the title
+
+                return {
+                    id: page.id,
+                    title: title,
+                    icon: page.icon?.type === 'emoji' ? page.icon.emoji : null, // Get the emoji if available
+                };
+            });
+
+            return NextResponse.json({ success: true, pages: formattedPages });
         } else if (action === 'createPage' && pageId) {
-            // Create a new page inside the selected page
+            const pageTitle = `${selectedPageName} flashcards`; // Use the selected page name and append "flashcards"
+        
             const response = await fetch('https://api.notion.com/v1/pages', {
                 method: 'POST',
                 headers: {
@@ -71,19 +87,42 @@ export async function POST(request) {
                         title: [
                             {
                                 text: {
-                                    content: 'New Project',
+                                    content: pageTitle,
                                 },
                             },
                         ],
                     },
+                    children: [ // Add children to the page
+                        {
+                            object: 'block',
+                            type: 'paragraph',
+                            paragraph: {
+                                text: [
+                                    {
+                                        type: 'text',
+                                        text: {
+                                            content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+                                        },
+                                    },
+                                ],
+                            },
+                        },
+                        {
+                            object: 'block',
+                            type: 'embed',
+                            embed: {
+                                url: 'https://notionflashcard.com',
+                            },
+                        },
+                    ],
                 }),
             });
-
+        
             if (!response.ok) {
                 const errorText = await response.text();
                 throw new Error(`Error creating Notion page: ${errorText}`);
             }
-
+        
             return NextResponse.json({ success: true, message: 'Notion page created successfully!' });
         } else {
             return NextResponse.json({ success: false, message: 'Invalid action or missing pageId' }, { status: 400 });
