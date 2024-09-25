@@ -6,7 +6,7 @@ import Solution from "./components/solution";
 import Versus from "./components/versus";
 import WhyNow from "./components/whyNow";
 import WhyThis from "./components/whyThis";
-import Footer from "./components/footer";
+import Footer from "./latest/components/footer";
 import AboutUsOne from "./components/aboutUsOne";
 
 const HomePage = () => {
