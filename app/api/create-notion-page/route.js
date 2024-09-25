@@ -8,24 +8,27 @@ export async function POST(request) {
         const requestBody = await request.json(); // Read the request body once
         const { action, pageId, selectedPageName } = requestBody; // Extract all needed data
 
-        const { data, error: supabaseError } = await supabase.auth.getUser();
+        const { data: userData, error: userError } = await supabase.auth.getUser();
 
-        if (supabaseError) {
+        if (userError || !userData || !userData.user) {
+            console.error('User authentication error:', userError);
             return NextResponse.json({ success: false, message: 'User not authenticated' }, { status: 401 });
         }
 
+        const userId = userData.user.id;
+
         // Fetch the user's Notion access token from the database
-        const { data: userData, error: userDataError } = await supabase
+        const { data: notionData, error: notionDataError } = await supabase
             .from('user_data')
             .select('notion_key')
-            .eq('user_id', data.user.id)
+            .eq('user_id', userId)
             .single();
 
-        if (userDataError || !userData?.notion_key) {
+        if (notionDataError || !notionData?.notion_key) {
             throw new Error('Notion key not found');
         }
 
-        const notionKey = userData.notion_key;
+        const notionKey = notionData.notion_key;
 
         if (action === 'fetchPages') {
             // Fetch the list of pages from Notion
@@ -149,7 +152,44 @@ export async function POST(request) {
                 throw new Error(`Error creating Notion page: ${errorText}`);
             }
 
-            return NextResponse.json({ success: true, message: 'Notion page created successfully!' });
+            const newPage = await response.json();
+
+            // Create a new entry in the flashcard_sets table
+            console.log('Attempting to insert flashcard set:', {
+                set_name: pageTitle,
+                set_link: newPage.url,
+                user_id: userId
+            });
+
+            const { data: flashcardSet, error: flashcardSetError } = await supabase
+                .from('flashcard_sets')  // Changed from 'flashcard_set' to 'flashcard_sets'
+                .insert([
+                    {
+                        set_name: pageTitle,
+                        set_link: newPage.url,
+                        user_id: userId
+                        // Note: created_at and updated_at will be automatically handled by Supabase
+                    }
+                ])
+                .select();
+
+            if (flashcardSetError) {
+                console.error('Supabase error:', flashcardSetError);
+                throw new Error(`Error creating flashcard set: ${JSON.stringify(flashcardSetError)}`);
+            }
+
+            if (!flashcardSet || flashcardSet.length === 0) {
+                console.error('Flashcard set was not created. Supabase response:', { data: flashcardSet, error: flashcardSetError });
+                throw new Error('Flashcard set was not created');
+            }
+
+            console.log('Flashcard set created successfully:', flashcardSet[0]);
+
+            return NextResponse.json({ 
+                success: true, 
+                message: 'Notion page and flashcard set created successfully!',
+                flashcardSet: flashcardSet[0]
+            });
         } else {
             return NextResponse.json({ success: false, message: 'Invalid action or missing pageId' }, { status: 400 });
         }
