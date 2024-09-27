@@ -1,7 +1,7 @@
 "use client"
 import { useState, useEffect } from 'react'
 
-export default function FlashcardEmbed({ embed_id }) {
+export default function EmbeddedComponent({ embed_id }) {
   const [flashcards, setFlashcards] = useState([])
   const [error, setError] = useState(null)
   const [currentCardIndex, setCurrentCardIndex] = useState(0)
