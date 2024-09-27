@@ -11,15 +11,11 @@ export async function GET(request) {
     }
 
     try {
-        // Get the user
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        if (userError) throw userError;
-
         // Get the flashcard set
         const { data: flashcardSet, error: flashcardSetError } = await supabase
             .from('flashcard_sets')
             .select('*')
-            .eq('set_id', set_id)
+            .eq('id', set_id) // Assuming 'id' is the primary key for flashcard sets
             .single();
         if (flashcardSetError) throw flashcardSetError;
 
@@ -27,7 +23,7 @@ export async function GET(request) {
         const { data: userData, error: userDataError } = await supabase
             .from('user_data')
             .select('notion_key')
-            .eq('user_id', user.id)
+            .eq('user_id', flashcardSet.user_id) // Use user_id from the flashcard set
             .single();
         if (userDataError) throw userDataError;
 
