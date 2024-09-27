@@ -117,9 +117,17 @@ export async function POST(request) {
                     children: [ // Add children to the page
                         {
                             object: 'block',
+                            type: 'embed',
+                            embed: {
+                                url: 'https://notionflashcard.com/embed/3d3bf686-5de3-4028-924a-444b25c961a2',
+                            },
+                        },
+                        // Vanno inseriti gli altri due embed, ma per ora non esiste la funzione quindi è inutile inserirli
+                        {
+                            object: 'block',
                             type: 'heading_2',
                             heading_2: {
-                                text: [{ type: 'text', text: { content: 'Here you can write your flashcards' } }]
+                                text: [{ type: 'text', text: { content: 'Write your flashcards here' } }]
                             }
                         },
                         {
@@ -130,17 +138,10 @@ export async function POST(request) {
                                     {
                                         type: 'text',
                                         text: {
-                                            content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+                                            content: 'To add a flashcard, use the format "Question == Answer" and press enter after each flashcard.',
                                         },
                                     },
                                 ],
-                            },
-                        },
-                        {
-                            object: 'block',
-                            type: 'embed',
-                            embed: {
-                                url: 'https://notionflashcard.com/embed/3d3bf686-5de3-4028-924a-444b25c961a2',
                             },
                         },
                     ],
