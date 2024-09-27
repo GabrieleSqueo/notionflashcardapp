@@ -35,7 +35,6 @@ export default function RootLayout({ children }) {
         <meta name="msapplication-TileColor" content={Metadata.meta.msapplicationTileColor} />
         <meta name="msapplication-TileImage" content={Metadata.meta.msapplicationTileImage} />
         <meta name="theme-color" content={Metadata.meta.themeColor} />
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; frame-ancestors 'self' https://www.notion.so;"/>
 
         {/* Dublin Core Meta */}
         <meta name="DC.title" content={Metadata.dublinCore.title} />
