@@ -46,7 +46,7 @@ const MainContent = ({ isNotionConnected }) => {
                         onConnect={handleConnectNotion}
                         isLoading={isLoading}
                     />
-                    <Link href="/latest/my-projects" className="bg-white overflow-hidden shadow rounded-lg">
+                    <Link href="/latest/projects" className="bg-white overflow-hidden shadow rounded-lg">
                         <div className="px-4 py-5 sm:p-6">
                             <div className="flex items-center">
                                 <div className="flex-shrink-0 bg-indigo-500 rounded-md p-3">
