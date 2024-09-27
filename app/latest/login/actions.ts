@@ -4,6 +4,8 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { createClient } from '../../utils/supabase/server'
+import { ResponseCookie } from 'next/dist/compiled/@edge-runtime/cookies' // Import the ResponseCookie type
+
 
 export async function login(formData: FormData) {
   const supabase = createClient()
@@ -22,12 +24,18 @@ export async function login(formData: FormData) {
   }
 
   if (sessionData?.session) {
-    cookies().set('supabase-auth-token', sessionData.session.access_token, {
+    // Set the cookie for authentication
+    const cookieStore = cookies()
+  
+    const cookieOptions: Partial<ResponseCookie> = {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Use lowercase 'none' for production
       maxAge: 60 * 60 * 24 * 7, // 1 week
       path: '/',
-    })
+    }
+  
+    cookieStore.set('supabase-auth-token', sessionData.session.access_token, cookieOptions)
   }
 
   revalidatePath('/', 'layout')
