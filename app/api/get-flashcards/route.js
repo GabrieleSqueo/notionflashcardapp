@@ -1,16 +1,25 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '../../utils/supabase/server';
+import { createClient } from '@supabase/supabase-js';
+
+// Ensure environment variables are properly loaded
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error('Missing Supabase environment variables');
+  throw new Error('Missing Supabase environment variables');
+}
+
+// Create a single supabase client for interacting with your database
+const supabase = createClient(supabaseUrl, supabaseKey);
+
 export async function GET(request) {
-    const supabase = createClient();
     const { searchParams } = new URL(request.url);
     const set_id = searchParams.get('set_id');
     if (!set_id) {
         return NextResponse.json({ error: 'set_id is required' }, { status: 400 });
     }
     try {
-        // Get the user
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        if (userError) throw userError;
         // Get the flashcard set
         const { data: flashcardSet, error: flashcardSetError } = await supabase
             .from('flashcard_sets')
@@ -18,14 +27,17 @@ export async function GET(request) {
             .eq('set_id', set_id)
             .single();
         if (flashcardSetError) throw flashcardSetError;
+        console.log(flashcardSet)
+
         // Get the user's Notion key
         const { data: userData, error: userDataError } = await supabase
             .from('user_data')
             .select('notion_key')
-            .eq('user_id', user.id)
+            .eq('user_id', flashcardSet.user_id)
             .single();
         if (userDataError) throw userDataError;
         const notionKey = userData.notion_key;
+
         // Extract page ID from the set_link
         const pageId = flashcardSet.set_link.split('-').pop();
         // Fetch the page content
