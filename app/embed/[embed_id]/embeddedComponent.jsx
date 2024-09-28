@@ -1,11 +1,13 @@
 "use client"
 import { useState, useEffect } from 'react'
+import { MdLightMode, MdDarkMode } from 'react-icons/md'
 
 export default function EmbeddedComponent({ embed_id }) {
   const [flashcards, setFlashcards] = useState([])
   const [error, setError] = useState(null)
   const [currentCardIndex, setCurrentCardIndex] = useState(0)
   const [isFlipped, setIsFlipped] = useState(false)
+  const [isDarkMode, setIsDarkMode] = useState(false)
 
   useEffect(() => {
     const fetchContent = async () => {
@@ -38,6 +40,30 @@ export default function EmbeddedComponent({ embed_id }) {
     setIsFlipped(!isFlipped)
   }
 
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode)
+  }
+
+  const handleButtonClick = (e, action) => {
+    const button = e.currentTarget;
+    button.classList.add('active');
+    
+    const removeActiveClass = () => {
+      button.classList.remove('active');
+    };
+
+    // Use requestAnimationFrame for smoother animation
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        removeActiveClass();
+        action();
+      });
+    });
+
+    // Fallback timeout in case the button is still in the DOM
+    setTimeout(removeActiveClass, 150);
+  };
+
   if (error) {
     return <div className="text-red-500 text-center p-4">Error: {error}</div>
   }
@@ -49,35 +75,47 @@ export default function EmbeddedComponent({ embed_id }) {
   const currentCard = flashcards[currentCardIndex]
 
   return (
-    <div className="flex flex-col items-center justify-between w-full h-screen bg-gradient-to-br from-blue-100 to-purple-100 p-4">
+    <div className={`flex flex-col items-center justify-between w-full h-screen p-4 transition-colors duration-300 ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gradient-to-br from-blue-100 to-purple-100'}`}>
       <div className="w-full max-w-4xl flex-grow flex flex-col justify-center items-center perspective">
         <div 
           className={`relative w-full h-full max-h-[70vh] transition-transform duration-500 transform-style-3d ${isFlipped ? 'rotate-y-180' : ''}`}
           onClick={toggleFlip}
         >
-          <div className="absolute w-full h-full backface-hidden bg-white rounded-lg shadow-xl p-6 flex items-center justify-center cursor-pointer">
-            <p className="text-2xl md:text-4xl lg:text-5xl font-semibold text-center text-black">
+          <div className={`absolute w-full h-full backface-hidden rounded-lg shadow-xl p-6 flex items-center justify-center cursor-pointer ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+            <p className={`text-2xl md:text-4xl lg:text-5xl font-semibold text-center ${isDarkMode ? 'text-white' : 'text-black'}`}>
               {currentCard.front}
             </p>
           </div>
-          <div className="absolute w-full h-full backface-hidden bg-white rounded-lg shadow-xl p-6 flex items-center justify-center rotate-y-180 cursor-pointer">
-            <p className="text-2xl md:text-4xl lg:text-5xl font-semibold text-center text-black">
+          <div className={`absolute w-full h-full backface-hidden rounded-lg shadow-xl p-6 flex items-center justify-center rotate-y-180 cursor-pointer ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+            <p className={`text-2xl md:text-4xl lg:text-5xl font-semibold text-center ${isDarkMode ? 'text-white' : 'text-black'}`}>
               {currentCard.back}
             </p>
           </div>
         </div>
       </div>
       <div className="flex justify-between items-center mt-4 w-full max-w-4xl">
-        <button onClick={prevCard} className="text-blue-600 hover:text-blue-800 focus:outline-none text-xl md:text-2xl">
+        <button 
+          onClick={(e) => handleButtonClick(e, prevCard)} 
+          className="px-6 py-3 bg-green-500 text-white rounded-xl shadow-[0_5px_0_rgb(18,142,63)] text-xl md:text-2xl font-bold transition-all duration-150 active:shadow-[0_0_0_rgb(18,142,63)] active:translate-y-[5px]"
+        >
           ← Prev
         </button>
-        <p className="text-center text-sm md:text-base text-gray-600">
+        <p className={`text-center text-sm md:text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
           Card {currentCardIndex + 1} of {flashcards.length}
         </p>
-        <button onClick={nextCard} className="text-blue-600 hover:text-blue-800 focus:outline-none text-xl md:text-2xl">
+        <button 
+          onClick={(e) => handleButtonClick(e, nextCard)} 
+          className="px-6 py-3 bg-green-500 text-white rounded-xl shadow-[0_5px_0_rgb(18,142,63)] text-xl md:text-2xl font-bold transition-all duration-150 active:shadow-[0_0_0_rgb(18,142,63)] active:translate-y-[5px]"
+        >
           Next →
         </button>
       </div>
+      <button 
+        onClick={(e) => handleButtonClick(e, toggleDarkMode)} 
+        className="mt-4 p-2 rounded-full bg-yellow-400 text-gray-900 shadow-[0_5px_0_rgb(202,138,4)] focus:outline-none transition-all duration-150 active:shadow-[0_0_0_rgb(202,138,4)] active:translate-y-[5px]"
+      >
+        {isDarkMode ? <MdLightMode size={24} /> : <MdDarkMode size={24} />}
+      </button>
     </div>
   )
 }
