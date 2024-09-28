@@ -75,101 +75,16 @@ export async function POST(request) {
 
             return NextResponse.json({ success: true, pages: formattedPages });
         } else if (action === 'createPage' && pageId) {
-            const pageTitle = `${selectedPageName} flashcards`; // Use the selected page name and append "flashcards"
+            const pageTitle = `${selectedPageName} flashcards`;
 
-            // Array of random background URLs (you can replace these with actual Notion-compatible image URLs)
-            const backgroundUrls = [
-                "https://www.notion.so/images/page-cover/solid_blue.png",
-                "https://www.notion.so/images/page-cover/gradients_10.jpg",
-                "https://www.notion.so/images/page-cover/met_william_morris_1877_willow.jpg",
-                "https://www.notion.so/images/page-cover/woodcuts_3.jpg"
-            ];
-            const randomBackground = backgroundUrls[Math.floor(Math.random() * backgroundUrls.length)];
-
-            const response = await fetch('https://api.notion.com/v1/pages', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${notionKey}`,
-                    'Content-Type': 'application/json',
-                    'Notion-Version': '2021-05-13',
-                },
-                body: JSON.stringify({
-                    parent: { page_id: pageId },
-                    icon: {
-                        type: "emoji",
-                        emoji: "🦄"
-                    },
-                    cover: {
-                        type: "external",
-                        external: {
-                            url: randomBackground
-                        }
-                    },
-                    properties: {
-                        title: [
-                            {
-                                text: {
-                                    content: pageTitle,
-                                },
-                            },
-                        ],
-                    },
-                    children: [ // Add children to the page
-                        {
-                            object: 'block',
-                            type: 'embed',
-                            embed: {
-                                url: 'https://notionflashcard.com/embed/3d3bf686-5de3-4028-924a-444b25c961a2',
-                            },
-                        },
-                        // Vanno inseriti gli altri due embed, ma per ora non esiste la funzione quindi è inutile inserirli
-                        {
-                            object: 'block',
-                            type: 'heading_2',
-                            heading_2: {
-                                text: [{ type: 'text', text: { content: 'Write your flashcards here' } }]
-                            }
-                        },
-                        {
-                            object: 'block',
-                            type: 'paragraph',
-                            paragraph: {
-                                text: [
-                                    {
-                                        type: 'text',
-                                        text: {
-                                            content: 'To add a flashcard, use the format "Question == Answer" and press enter after each flashcard.',
-                                        },
-                                    },
-                                ],
-                            },
-                        },
-                    ],
-                }),
-            });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Error creating Notion page: ${errorText}`);
-            }
-
-            const newPage = await response.json();
-
-            // Create a new entry in the flashcard_sets table
-            console.log('Attempting to insert flashcard set:', {
-                set_name: pageTitle,
-                set_link: newPage.url,
-                user_id: userId
-            });
-
+            // First, create a new entry in the flashcard_sets table
             const { data: flashcardSet, error: flashcardSetError } = await supabase
-                .from('flashcard_sets')  // Changed from 'flashcard_set' to 'flashcard_sets'
+                .from('flashcard_sets')
                 .insert([
                     {
                         set_name: pageTitle,
-                        set_link: newPage.url,
-                        user_id: userId
-                        // Note: created_at and updated_at will be automatically handled by Supabase
+                        user_id: userId,
+                        set_link: null  // Explicitly set to null
                     }
                 ])
                 .select();
@@ -184,12 +99,156 @@ export async function POST(request) {
                 throw new Error('Flashcard set was not created');
             }
 
-            console.log('Flashcard set created successfully:', flashcardSet[0]);
+            const set_id = flashcardSet[0].set_id;
+
+            // Array of random background URLs
+            const backgroundUrls = [
+                "https://www.notion.so/images/page-cover/solid_blue.png",
+                "https://www.notion.so/images/page-cover/gradients_10.jpg",
+                "https://www.notion.so/images/page-cover/met_william_morris_1877_willow.jpg",
+                "https://www.notion.so/images/page-cover/woodcuts_3.jpg"
+            ];
+            const randomBackground = backgroundUrls[Math.floor(Math.random() * backgroundUrls.length)];
+
+            const response = await fetch('https://api.notion.com/v1/pages', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${notionKey}`,
+                    'Content-Type': 'application/json',
+                    'Notion-Version': '2022-06-28',
+                },
+                body: JSON.stringify({
+                    parent: { page_id: pageId },
+                    icon: {
+                        type: "emoji",
+                        emoji: "🦄"
+                    },
+                    cover: {
+                        type: "external",
+                        external: {
+                            url: randomBackground
+                        }
+                    },
+                    properties: {
+                        title: {
+                            title: [
+                                {
+                                    text: {
+                                        content: pageTitle,
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                    children: [
+                        {
+                            object: 'block',
+                            type: 'callout',
+                            callout: {
+                                rich_text: [{
+                                    type: 'text',
+                                    text: {
+                                        content: 'This is your study hub, here you can find everything about the subject you\'re studying, from learning tools to statistics about your progress',
+                                    },
+                                }],
+                                icon: {
+                                    emoji: '💡'
+                                },
+                                color: 'gray_background',
+                            },
+                        },
+                        {
+                            object: 'block',
+                            type: 'heading_2',
+                            heading_2: {
+                                rich_text: [{ type: 'text', text: { content: 'Time to test yourself!' } }]
+                            }
+                        },
+                        {
+                            object: 'block',
+                            type: 'embed',
+                            embed: {
+                                url: `https://notionflashcard.com/embed/${set_id}`,
+                            },
+                        },
+                        {
+                            object: 'block',
+                            type: 'heading_2',
+                            heading_2: {
+                                rich_text: [{ type: 'text', text: { content: 'Write your flashcards here' } }]
+                            }
+                        },
+                        {
+                            object: 'block',
+                            type: 'paragraph',
+                            paragraph: {
+                                rich_text: [
+                                    {
+                                        type: 'text',
+                                        text: {
+                                            content: 'To add a flashcard, use the format "Question == Answer" and press enter after each flashcard.',
+                                        },
+                                    },
+                                ],
+                            },
+                        },
+                        {
+                            object: 'block',
+                            type: 'paragraph',
+                            paragraph: {
+                                rich_text: [
+                                    {
+                                        type: 'text',
+                                        text: {
+                                            content: 'Write the flashcards all above this line',
+                                        },
+                                    },
+                                ],
+                            },
+                        },
+                        {
+                            object: 'block',
+                            type: 'divider',
+                            divider: {}
+                        },
+                    ],
+                }),
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Error creating Notion page: ${errorText}`);
+            }
+
+            const newPage = await response.json();
+
+            // Update the flashcard set with the Notion page URL
+            const { error: updateError } = await supabase
+                .from('flashcard_sets')
+                .update({ set_link: newPage.url })
+                .eq('set_id', set_id);
+
+            if (updateError) {
+                console.error('Error updating flashcard set with Notion URL:', updateError);
+                throw new Error(`Error updating flashcard set: ${JSON.stringify(updateError)}`);
+            }
+
+            // Fetch the updated flashcard set
+            const { data: updatedFlashcardSet, error: fetchError } = await supabase
+                .from('flashcard_sets')
+                .select('*')
+                .eq('set_id', set_id)
+                .single();
+
+            if (fetchError) {
+                console.error('Error fetching updated flashcard set:', fetchError);
+                throw new Error(`Error fetching updated flashcard set: ${JSON.stringify(fetchError)}`);
+            }
 
             return NextResponse.json({ 
                 success: true, 
                 message: 'Notion page and flashcard set created successfully!',
-                flashcardSet: flashcardSet[0]
+                flashcardSet: updatedFlashcardSet
             });
         } else {
             return NextResponse.json({ success: false, message: 'Invalid action or missing pageId' }, { status: 400 });

@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
+import { MdAdd, MdLink } from 'react-icons/md'
 
 const DashboardFooter = ({ isNotionConnected }) => {
     const [isLoading, setIsLoading] = useState(false)
@@ -13,7 +14,6 @@ const DashboardFooter = ({ isNotionConnected }) => {
         setError(null)
 
         try {
-            // Call our own API route to initiate Notion OAuth flow
             const response = await fetch("/api/initiate-notion-oauth");
             if (!response.ok) {
                 throw new Error('Failed to initiate Notion OAuth');
@@ -22,7 +22,6 @@ const DashboardFooter = ({ isNotionConnected }) => {
             const data = await response.json();
             if (data.error) throw new Error(data.error);
 
-            // Redirect to Notion authorization page
             window.location.href = data.authorizationUrl;
         } catch (err) {
             console.error('Error connecting to Notion:', err)
@@ -32,28 +31,47 @@ const DashboardFooter = ({ isNotionConnected }) => {
         }
     }
 
+    const handleButtonClick = (e, action) => {
+        const button = e.currentTarget;
+        button.classList.add('active');
+        
+        const removeActiveClass = () => {
+            button.classList.remove('active');
+        };
+
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                removeActiveClass();
+                action();
+            });
+        });
+
+        setTimeout(removeActiveClass, 150);
+    };
+
     return (
-        <footer className="fixed bottom-0 left-0 right-0 bg-white shadow-md">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <footer className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-blue-100 to-purple-100 shadow-md p-4">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {error && (
                     <div className="mb-2 text-red-600 text-sm text-center">{error}</div>
                 )}
                 {isNotionConnected ? (
-                    <Link href="/latest/new-project" className="flex items-center justify-center w-full px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition duration-300">
-                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                        </svg>
-                        Create New Flashcard Project
+                    <Link href="/latest/new-project" className="block">
+                        <button 
+                            onClick={(e) => handleButtonClick(e, () => {})}
+                            className="w-full flex items-center justify-center px-6 py-3 bg-green-500 text-white rounded-xl shadow-[0_5px_0_rgb(18,142,63)] text-xl font-bold transition-all duration-150 active:shadow-[0_0_0_rgb(18,142,63)] active:translate-y-[5px]"
+                        >
+                            <MdAdd className="w-6 h-6 mr-2" />
+                            Create New Flashcard Project
+                        </button>
                     </Link>
                 ) : (
                     <button
-                        onClick={handleConnectNotion}
+                        onClick={(e) => handleButtonClick(e, handleConnectNotion)}
                         disabled={isLoading}
-                        className="flex items-center justify-center w-full px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition duration-300 disabled:opacity-50"
+                        className="w-full flex items-center justify-center px-6 py-3 bg-indigo-500 text-white rounded-xl shadow-[0_5px_0_rgb(67,56,202)] text-xl font-bold transition-all duration-150 active:shadow-[0_0_0_rgb(67,56,202)] active:translate-y-[5px] disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                        </svg>
+                        <MdLink className="w-6 h-6 mr-2" />
                         {isLoading ? 'Connecting...' : 'Connect Notion to Create Flashcards'}
                     </button>
                 )}
