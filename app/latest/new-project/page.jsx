@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { MdAddCircle, MdCheck } from 'react-icons/md';
 
 export default function NewProjectPage() {
   const [status, setStatus] = useState('');
@@ -70,38 +71,49 @@ export default function NewProjectPage() {
     }
   };
 
+  const handlePageSelect = (pageId, pageName) => {
+    setSelectedPageId(pageId);
+    setSelectedPageName(pageName);
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
-      <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-md">
-        <h1 className="text-2xl text-black font-bold mb-4 text-center">Create New Notion Page</h1>
-        {status && <p className="mb-4 text-center text-gray-600">{status}</p>}
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 to-purple-100 p-4">
+      <div className="bg-white shadow-md rounded-xl p-6 w-full max-w-4xl">
+        <h1 className="text-3xl text-indigo-600 font-bold mb-6 text-center">Create New Notion Page</h1>
+        {status && <p className="mb-6 text-center text-gray-600">{status}</p>}
         
-        <div className="mb-4">
-          <label htmlFor="pages" className="block text-sm font-medium text-gray-700">Select a page:</label>
-          <select
-            id="pages"
-            name="pages"
-            className="text-black mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-            value={selectedPageId}
-            onChange={(e) => {
-              const selectedPage = pages.find(page => page.id === e.target.value);
-              setSelectedPageId(e.target.value);
-              setSelectedPageName(selectedPage ? selectedPage.title : ''); // Set the selected page name
-            }}
-          >
-            <option value="">-- Select a page --</option>
-            {pages.map((page) => (
-              <option key={page.id} value={page.id}>
-                {page.title || 'Untitled'} {/* Access the title directly */}
-              </option>
-            ))}
-          </select>
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold text-black mb-4">Select a page:</h2>
+          <div className="overflow-y-auto max-h-96 border border-gray-200 rounded-lg">
+            <div className="grid grid-cols-2 gap-2 p-2">
+              {pages.map((page) => (
+                <button
+                  key={page.id}
+                  onClick={() => handlePageSelect(page.id, page.title)}
+                  className={`text-black w-full p-4 text-left transition-all duration-200 border rounded-lg ${
+                    selectedPageId === page.id
+                      ? 'bg-indigo-100 border-indigo-500'
+                      : 'bg-white hover:bg-gray-50 border-transparent'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium truncate">{page.title || 'Untitled'}</span>
+                    {selectedPageId === page.id && <MdCheck className="text-indigo-500 flex-shrink-0 ml-2" />}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
         <button
           onClick={handleCreateNotionPage}
-          className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200"
+          disabled={!selectedPageId}
+          className={`w-full text-white px-6 py-3 rounded-xl shadow-[0_5px_0_rgb(67,56,202)] hover:shadow-[0_2px_0_rgb(67,56,202)] hover:translate-y-[3px] transition-all duration-150 font-medium text-lg flex items-center justify-center ${
+            selectedPageId ? 'bg-indigo-500 hover:bg-indigo-600' : 'bg-gray-400 cursor-not-allowed'
+          }`}
         >
+          <MdAddCircle className="mr-2 h-6 w-6" />
           Create Notion Page
         </button>
       </div>

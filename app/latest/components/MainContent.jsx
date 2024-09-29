@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import NotionConnect from './NotionConnect'
-import { MdSettings, MdFolderOpen, MdLightbulb } from 'react-icons/md'
+import { MdSettings, MdFolderOpen, MdLightbulb, MdAddCircle } from 'react-icons/md'
 
 const MainContent = ({ isNotionConnected }) => {
     const [isLoading, setIsLoading] = useState(false)
@@ -45,7 +45,7 @@ const MainContent = ({ isNotionConnected }) => {
                                 <dt className="text-sm font-medium text-gray-500 truncate">
                                     {title}
                                 </dt>
-                                <dd className="text-lg font-bold text-gray-900">
+                                <dd className="text-lg font-bold text-indigo-600">
                                     {description}
                                 </dd>
                             </dl>
@@ -80,6 +80,12 @@ const MainContent = ({ isNotionConnected }) => {
                         icon={MdSettings}
                         title="Settings"
                         description="Manage your account"
+                    />
+                    <ButtonLink 
+                        href="/latest/new-project" 
+                        icon={MdAddCircle}
+                        title="New Project"
+                        description="Create a new project"
                     />
                 </div>
             </div>
