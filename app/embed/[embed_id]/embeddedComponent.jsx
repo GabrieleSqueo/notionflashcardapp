@@ -69,13 +69,13 @@ export default function EmbeddedComponent({ embed_id }) {
   }
 
   if (flashcards.length === 0) {
-    return <div className="text-gray-500 text-center p-4">Loading flashcards...</div>
+    return <div className="text-gray-500 text-center p-4">It seems a bit empty here...</div>
   }
 
   const currentCard = flashcards[currentCardIndex]
 
   return (
-    <div className={`flex flex-col items-center justify-between w-full h-screen p-4 transition-colors duration-300 ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gradient-to-br from-blue-100 to-purple-100'}`}>
+    <div className={`flex flex-col items-center justify-between w-full h-screen p-4 transition-colors duration-300 ${isDarkMode ? 'bg-[#2F3438] text-white' : 'bg-white'}`}>
       <div className="w-full max-w-4xl flex-grow flex flex-col justify-center items-center perspective">
         <div 
           className={`relative w-full h-full max-h-[70vh] transition-transform duration-500 transform-style-3d ${isFlipped ? 'rotate-y-180' : ''}`}

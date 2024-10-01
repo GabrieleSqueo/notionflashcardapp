@@ -59,6 +59,11 @@ export async function GET(request) {
             .map(block => block.paragraph.rich_text.map(text => text.plain_text).join(''))
             .filter(text => text.trim() !== '') // Remove empty paragraphs
             .filter(text => {
+                // Exclude the instruction text
+                if (text.includes("To add a flashcard, use the format") && 
+                    text.includes("Question == Answer")) {
+                    return false;
+                }
                 const parts = text.split('==').map(part => part.trim());
                 return parts.length === 2 && parts[0] !== '' && parts[1] !== '';
             })
