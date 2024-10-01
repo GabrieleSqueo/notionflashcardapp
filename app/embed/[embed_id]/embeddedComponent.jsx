@@ -75,7 +75,7 @@ export default function EmbeddedComponent({ embed_id }) {
   const currentCard = flashcards[currentCardIndex]
 
   return (
-    <div className={`flex flex-col items-center justify-between w-full h-screen p-4 transition-colors duration-300 ${isDarkMode ? 'bg-[#2F3438] text-white' : 'bg-white'}`}>
+    <div className={`flex flex-col items-center justify-between w-full h-screen p-4 transition-colors duration-300 ${isDarkMode ? 'bg-[#191919] text-white' : 'bg-white'}`}>
       <div className="w-full max-w-4xl flex-grow flex flex-col justify-center items-center perspective">
         <div 
           className={`relative w-full h-full max-h-[70vh] transition-transform duration-500 transform-style-3d ${isFlipped ? 'rotate-y-180' : ''}`}
