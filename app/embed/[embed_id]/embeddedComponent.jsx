@@ -81,13 +81,21 @@ export default function EmbeddedComponent({ embed_id }) {
           className={`relative w-full h-full max-h-[70vh] transition-transform duration-500 transform-style-3d ${isFlipped ? 'rotate-y-180' : ''}`}
           onClick={toggleFlip}
         >
-          <div className={`absolute w-full h-full backface-hidden rounded-lg shadow-xl p-6 flex items-center justify-center cursor-pointer ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-            <p className={`text-2xl md:text-4xl lg:text-5xl font-semibold text-center ${isDarkMode ? 'text-white' : 'text-black'}`}>
+          <div className={`absolute w-full h-full backface-hidden rounded-xl p-6 flex items-center justify-center cursor-pointer ${
+            isDarkMode 
+              ? 'bg-gray-800 shadow-[0_5px_0_rgb(59,130,246)]' 
+              : 'bg-gray-100 shadow-[0_5px_0_rgb(34,197,94)]'
+          }`}>
+            <p className={`text-2xl md:text-4xl lg:text-5xl font-semibold text-center ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
               {currentCard.front}
             </p>
           </div>
-          <div className={`absolute w-full h-full backface-hidden rounded-lg shadow-xl p-6 flex items-center justify-center rotate-y-180 cursor-pointer ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-            <p className={`text-2xl md:text-4xl lg:text-5xl font-semibold text-center ${isDarkMode ? 'text-white' : 'text-black'}`}>
+          <div className={`absolute w-full h-full backface-hidden rounded-xl p-6 flex items-center justify-center rotate-y-180 cursor-pointer ${
+            isDarkMode 
+              ? 'bg-gray-800 shadow-[0_5px_0_rgb(59,130,246)]' 
+              : 'bg-gray-100 shadow-[0_5px_0_rgb(34,197,94)]'
+          }`}>
+            <p className={`text-2xl md:text-4xl lg:text-5xl font-semibold text-center ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
               {currentCard.back}
             </p>
           </div>
