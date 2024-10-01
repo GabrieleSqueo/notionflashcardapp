@@ -69,26 +69,13 @@ export async function signup(formData: FormData) {
     password: formData.get('password') as string,
     username: formData.get('username') as string,
   }
-
+  
   // Hash the password
   const saltRounds = 10
   const hashedPassword = await bcrypt.hash(data.password, saltRounds)
 
-  // Insert the user data into the user_data table
-  const { error: dbError } = await supabase
-    .from('user_data')
-    .insert({
-      email: data.email,
-      password: hashedPassword,
-      username: data.username,
-      notion_key: ""
-    })
 
-  if (dbError) {
-    console.error('Database error:', dbError)
-    redirect('/latest/error')
-  }
-
+  
   // Create the user in Supabase Auth
   const { error: authError } = await supabase.auth.signUp({
     email: data.email,
@@ -100,5 +87,22 @@ export async function signup(formData: FormData) {
     redirect('/latest/error')
   }
 
+  console.log("User created in database")
+
+  // Insert the user data into the user_data table
+  const { error: dbError } = await supabase
+  .from('user_data')
+  .insert({
+    email: data.email,
+    password: hashedPassword,
+    username: data.username,
+    notion_key: ""
+  })
+
+  if (dbError) {
+    console.error('Database error:', dbError)
+    redirect('/latest/error')
+  }
+  
   redirect('/latest/login')
 }

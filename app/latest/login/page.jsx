@@ -27,7 +27,7 @@ function LoginForm() {
         }
       } else {
         await signup(formData)
-        router.push('/latest')
+        router.push('/latest/login')
       }
     } catch (e) {
       setError(e.message)
