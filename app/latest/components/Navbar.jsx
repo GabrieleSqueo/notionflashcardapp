@@ -1,8 +1,10 @@
 'use client'
 
 import React from 'react'
+import Image from 'next/image'
 import { logout } from '../actions'
 import { MdExitToApp } from 'react-icons/md'
+import logo from '../../../public/logo.png'
 
 const Navbar = ({ userEmail }) => {
     const handleButtonClick = (e, action) => {
@@ -24,11 +26,12 @@ const Navbar = ({ userEmail }) => {
     };
 
     return (
-        <nav className="bg-gradient-to-r from-blue-100 to-purple-100 shadow-md">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav className="mx-auto bg-gradient-to-r from-blue-100 to-purple-100 shadow-md">
+            <div className="max-w-7xl mx-auto">
                 <div className="flex justify-between h-16">
                     <div className="flex">
-                        <div className="flex-shrink-0 flex items-center">
+                        <div className="flex-shrink-0 flex items-center gap-2">
+                            <Image src={logo} alt="NotionFlashcard Logo" className="h-12 w-auto mr-2" width={32} height={32} />
                             <h1 className="text-2xl font-bold text-indigo-600">NotionFlashcard</h1>
                         </div>
                     </div>

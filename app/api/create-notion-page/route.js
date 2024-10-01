@@ -208,6 +208,20 @@ export async function POST(request) {
                         },
                         {
                             object: 'block',
+                            type: 'quote',
+                            quote: {
+                                rich_text: [
+                                    {
+                                        type: 'text',
+                                        text: {
+                                            content: 'If you want to update the flashcard embed, please hit CTRL+R and refresh',
+                                        },
+                                    },
+                                ],
+                            },
+                        },
+                        {
+                            object: 'block',
                             type: 'divider',
                             divider: {}
                         },

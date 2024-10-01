@@ -31,9 +31,6 @@ const Navbarone = () => {
             </span>
           </div>
           <div className="flex items-center space-x-4">
-            <Link href="/latest/projects" className="text-white hover:text-purple-300 transition-colors duration-300">
-              My Flashcards
-            </Link>
             <button 
               onClick={handleButtonClick}
               className="px-4 py-2 text-white font-semibold rounded-full transition duration-300 ease-in-out transform hover:scale-105 bg-white bg-opacity-10 hover:bg-opacity-20 backdrop-blur-md border border-white border-opacity-10 hover:border-opacity-20 shadow-lg"
