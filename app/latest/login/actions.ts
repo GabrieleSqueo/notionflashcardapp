@@ -69,10 +69,6 @@ export async function signup(formData: FormData) {
     password: formData.get('password') as string,
     username: formData.get('username') as string,
   }
-  
-  // Hash the password
-  const saltRounds = 10
-  const hashedPassword = await bcrypt.hash(data.password, saltRounds)
 
   try {
     // Insert the user data into the user_data table first
@@ -80,7 +76,6 @@ export async function signup(formData: FormData) {
       .from('user_data')
       .insert({
         email: data.email,
-        password: hashedPassword,
         username: data.username,
         notion_key: ""
       })
