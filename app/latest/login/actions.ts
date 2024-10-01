@@ -74,35 +74,42 @@ export async function signup(formData: FormData) {
   const saltRounds = 10
   const hashedPassword = await bcrypt.hash(data.password, saltRounds)
 
+  try {
+    // Insert the user data into the user_data table first
+    const { error: dbError } = await supabase
+      .from('user_data')
+      .insert({
+        email: data.email,
+        password: hashedPassword,
+        username: data.username,
+        notion_key: ""
+      })
 
-  
-  // Create the user in Supabase Auth
-  const { error: authError } = await supabase.auth.signUp({
-    email: data.email,
-    password: data.password,
-  })
+    if (dbError) {
+      console.error('Database error:', dbError)
+      redirect('/latest/error')
+    }
 
-  if (authError) {
-    console.error('Auth error:', authError)
+    // Create the user in Supabase Auth
+    const { error: authError } = await supabase.auth.signUp({
+      email: data.email,
+      password: data.password,
+    })
+
+    if (authError) {
+      console.error('Auth error:', authError)
+      // If auth fails, we should remove the user from user_data table
+      await supabase
+        .from('user_data')
+        .delete()
+        .match({ email: data.email })
+      redirect('/latest/error')
+    }
+
+    console.log("User created successfully")
+    redirect('/latest/login')
+  } catch (error) {
+    console.error('Unexpected error:', error)
     redirect('/latest/error')
   }
-
-  console.log("User created in database")
-
-  // Insert the user data into the user_data table
-  const { error: dbError } = await supabase
-  .from('user_data')
-  .insert({
-    email: data.email,
-    password: hashedPassword,
-    username: data.username,
-    notion_key: ""
-  })
-
-  if (dbError) {
-    console.error('Database error:', dbError)
-    redirect('/latest/error')
-  }
-  
-  redirect('/latest/login')
 }
