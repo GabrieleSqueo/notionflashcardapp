@@ -40,6 +40,15 @@ export async function login(formData: FormData) {
   })
 
   if (error) {
+    if (error.message.includes('Invalid Refresh Token')) {
+      console.error('Invalid refresh token:', error)
+      // Clear any existing cookies
+      const cookieStore = cookies()
+      cookieStore.delete('supabase-auth-token')
+      // Redirect to login page with an error message
+      redirect('/latest/login?error=session_expired')
+    }
+    console.error('Login error:', error)
     redirect('/latest/error')
   }
 
@@ -69,22 +78,27 @@ export async function signup(formData: FormData) {
     password: formData.get('password') as string,
     username: formData.get('username') as string,
   }
-
+  console.log(data)
   try {
     // Create the user in Supabase Auth first
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email: data.email,
       password: data.password,
+      options: {
+        data: {
+          username: data.username,
+        },
+      },
     })
 
     if (authError) {
       console.error('Auth error:', authError)
-      redirect('/latest/error')
+      redirect('/latest/signup?error=auth_error')
     }
 
     if (!authData.user) {
       console.error('User not created in auth')
-      redirect('/latest/error')
+      redirect('/latest/signup?error=user_not_created')
     }
 
     // Insert the user data into the user_data table
@@ -101,13 +115,13 @@ export async function signup(formData: FormData) {
       console.error('Database error:', dbError)
       // If db insert fails, we should remove the user from auth
       await supabase.auth.admin.deleteUser(authData.user.id)
-      redirect('/latest/error')
+      redirect('/latest/signup?error=database_error')
     }
 
     console.log("User created successfully")
-    redirect('/latest/login')
+    redirect('/latest/login?message=signup_success')
   } catch (error) {
     console.error('Unexpected error:', error)
-    redirect('/latest/error')
+    redirect('/latest/signup?error=unexpected_error')
   }
 }
