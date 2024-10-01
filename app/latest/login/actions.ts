@@ -71,10 +71,27 @@ export async function signup(formData: FormData) {
   }
 
   try {
-    // Insert the user data into the user_data table first
+    // Create the user in Supabase Auth first
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email: data.email,
+      password: data.password,
+    })
+
+    if (authError) {
+      console.error('Auth error:', authError)
+      redirect('/latest/error')
+    }
+
+    if (!authData.user) {
+      console.error('User not created in auth')
+      redirect('/latest/error')
+    }
+
+    // Insert the user data into the user_data table
     const { error: dbError } = await supabase
       .from('user_data')
       .insert({
+        user_id: authData.user.id,
         email: data.email,
         username: data.username,
         notion_key: ""
@@ -82,22 +99,8 @@ export async function signup(formData: FormData) {
 
     if (dbError) {
       console.error('Database error:', dbError)
-      redirect('/latest/error')
-    }
-
-    // Create the user in Supabase Auth
-    const { error: authError } = await supabase.auth.signUp({
-      email: data.email,
-      password: data.password,
-    })
-
-    if (authError) {
-      console.error('Auth error:', authError)
-      // If auth fails, we should remove the user from user_data table
-      await supabase
-        .from('user_data')
-        .delete()
-        .match({ email: data.email })
+      // If db insert fails, we should remove the user from auth
+      await supabase.auth.admin.deleteUser(authData.user.id)
       redirect('/latest/error')
     }
 
