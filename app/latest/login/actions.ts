@@ -23,6 +23,7 @@ export async function login(formData: FormData) {
     .single()
 
   if (fetchError || !user) {
+    console.log("Fetch error:", fetchError)
     redirect('/latest/error')
   }
 
@@ -30,6 +31,7 @@ export async function login(formData: FormData) {
   const passwordMatch = await bcrypt.compare(data.password, user.password)
 
   if (!passwordMatch) {
+    console.log("Password does not match")
     redirect('/latest/error')
   }
 
