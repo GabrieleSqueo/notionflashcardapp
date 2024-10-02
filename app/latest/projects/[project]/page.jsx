@@ -57,6 +57,24 @@ const ErrorMessage = ({ message }) => (
     </div>
 );
 
+// DeleteConfirmationModal component
+const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm }) => {
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white text-black rounded-lg p-6 shadow-lg">
+                <h3 className="text-lg font-semibold mb-4">Confirm Deletion</h3>
+                <p>Are you sure you want to delete this flashcard set?</p>
+                <div className="flex justify-end mt-4">
+                    <button onClick={onClose} className="mr-2 px-4 py-2 bg-gray-300 rounded">Cancel</button>
+                    <button onClick={onConfirm} className="px-4 py-2 bg-red-500 text-white rounded">Delete</button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 export default function FlashcardSetDetails() {
     const { project } = useParams();
     const [flashcardSet, setFlashcardSet] = useState(null);
@@ -64,6 +82,7 @@ export default function FlashcardSetDetails() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [copied, setCopied] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         async function fetchData() {
@@ -102,6 +121,12 @@ export default function FlashcardSetDetails() {
         });
     };
 
+    const handleDelete = () => {
+        // Add logic to delete the flashcard set
+        console.log("Flashcard set deleted");
+        setIsModalOpen(false);
+    };
+
     if (loading) return <LoadingSpinner />;
     if (error) return <ErrorMessage message={error} />;
 
@@ -121,13 +146,13 @@ export default function FlashcardSetDetails() {
                                         <ActionButton 
                                             icon={MdPlayArrow} 
                                             text="Start Learning" 
-                                            onClick={() => {/* Add logic to start learning */}} 
+                                            onClick={() => window.location.href = flashcardSet.set_link} // Navigate to the flashcard set link
                                             bgColor="bg-green-500"
                                         />
                                         <ActionButton 
                                             icon={MdDelete} 
                                             text="Delete Set" 
-                                            onClick={() => {/* Add logic to delete set */}} 
+                                            onClick={() => setIsModalOpen(true)} 
                                             bgColor="bg-red-500"
                                         />
                                     </div>
@@ -169,7 +194,6 @@ export default function FlashcardSetDetails() {
                                         )}
                                     </div>
 
-                                    {/* Updated text section */}
                                     <div className="flex items-center mt-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-700 rounded-md">
                                         <MdInfo className="h-5 w-5 mr-2" />
                                         <span className="text-sm">You can only modify your flashcards on Notion.</span>
@@ -182,6 +206,11 @@ export default function FlashcardSetDetails() {
                     )}
                 </div>
             </main>
+            <DeleteConfirmationModal 
+                isOpen={isModalOpen} 
+                onClose={() => setIsModalOpen(false)} 
+                onConfirm={handleDelete} 
+            />
         </div>
     );
 }
