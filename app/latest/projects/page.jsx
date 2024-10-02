@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { FaPlus, FaBook, FaSpinner } from 'react-icons/fa';
+import { MdAddCircle, MdFolderOpen, MdRefresh } from 'react-icons/md';
 
 export default function UserFlashcardSets() {
 	const [flashcardSets, setFlashcardSets] = useState([]);
@@ -23,6 +23,7 @@ export default function UserFlashcardSets() {
 				}
 
 				const data = await response.json();
+				console.log(data);
 				setFlashcardSets(data);
 			} catch (error) {
 				console.error('Error fetching flashcard sets:', error);
@@ -35,69 +36,61 @@ export default function UserFlashcardSets() {
 		fetchFlashcardSets();
 	}, []);
 
+	const ButtonLink = ({ href, icon: Icon, title, description }) => (
+		<Link href={href} className="block">
+			<button className="w-full text-left bg-white rounded-xl shadow-[0_5px_0_rgb(203,213,225)] hover:shadow-[0_2px_0_rgb(203,213,225)] hover:translate-y-[3px] transition-all duration-150 overflow-hidden">
+				<div className="px-6 py-5">
+					<div className="flex items-center">
+						<div className="flex-shrink-0 bg-indigo-500 rounded-xl p-3">
+							<Icon className="h-8 w-8 text-white" />
+						</div>
+						<div className="ml-5 w-0 flex-1">
+							<dl>
+								<dt className="text-sm font-medium text-gray-500 truncate">
+									{title}
+								</dt>
+								<dd className="text-lg font-bold text-indigo-600">
+									{description}
+								</dd>
+							</dl>
+						</div>
+					</div>
+				</div>
+			</button>
+		</Link>
+	);
+
 	return (
-		<div className="min-h-screen bg-white">
+		<div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-100">
 			<main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
 				<div className="px-4 py-6 sm:px-0">
 					<h2 className="text-3xl font-bold text-gray-900 mb-6">Your Flashcard Sets</h2>
 					
 					{error && (
-						<div className="mb-4 text-red-600 text-sm">{error}</div>
+						<div className="mb-6 text-red-600 text-sm bg-red-100 border border-red-400 rounded-lg p-4">{error}</div>
 					)}
 
-					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-						<Link href="/latest/new-project" className="bg-white overflow-hidden shadow rounded-lg border border-gray-200 hover:shadow-md transition-shadow duration-300">
-							<div className="px-4 py-5 sm:p-6">
-								<div className="flex items-center">
-									<div className="flex-shrink-0 bg-indigo-500 rounded-md p-3">
-										<FaPlus className="h-6 w-6 text-white" />
-									</div>
-									<div className="ml-5 w-0 flex-1">
-										<dl>
-											<dt className="text-sm font-medium text-gray-500 truncate">
-												Create New Set
-											</dt>
-											<dd className="text-lg font-medium text-gray-900">
-												Add a new flashcard set
-											</dd>
-										</dl>
-									</div>
-								</div>
-							</div>
-						</Link>
+					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+						<ButtonLink 
+							href="/latest/new-project" 
+							icon={MdAddCircle}
+							title="Create New Set"
+							description="Add a new flashcard set"
+						/>
 
 						{loading ? (
 							<div className="col-span-2 flex justify-center items-center">
-								<FaSpinner className="animate-spin text-4xl text-indigo-500" />
+								<MdRefresh className="animate-spin text-4xl text-indigo-500" />
 							</div>
 						) : (
 							flashcardSets.map((set) => (
-								<Link href={`/flashcard-set/${set.id}`} key={set.id} className="bg-white overflow-hidden shadow rounded-lg border border-gray-200 hover:shadow-md transition-shadow duration-300">
-									<div className="px-4 py-5 sm:p-6">
-										<div className="flex items-center">
-											<div className="flex-shrink-0 bg-green-500 rounded-md p-3">
-												<FaBook className="h-6 w-6 text-white" />
-											</div>
-											<div className="ml-5 w-0 flex-1">
-												<dl>
-													<dt className="text-sm font-medium text-gray-500 truncate">
-														Flashcard Set
-													</dt>
-													<dd className="text-lg font-medium text-gray-900">
-														{set.title}
-													</dd>
-												</dl>
-											</div>
-										</div>
-									</div>
-									<div className="bg-gray-50 px-4 py-4 sm:px-6">
-										<div className="text-sm">
-											<span className="font-medium text-indigo-600 hover:text-indigo-500">
-												View set <span aria-hidden="true">&rarr;</span>
-											</span>
-										</div>
-									</div>
-								</Link>
+								<ButtonLink 
+									key={set.id}
+									href={`/latest/projects/${set.id}`}
+									icon={MdFolderOpen}
+									title="Flashcard Set"
+									description={set.title}
+								/>
 							))
 						)}
 					</div>

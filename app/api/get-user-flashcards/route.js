@@ -28,8 +28,9 @@ export async function GET() {
 
 		// Format the flashcard sets to match the expected structure
 		const formattedSets = flashcardSets.map(set => ({
-			id: set.id,
+			id: set.set_id,
 			title: set.set_name,
+			set_link: set.set_link,
 			cardCount: set.card_count || 0, // Assuming there's a card_count column, otherwise default to 0
 			createdAt: set.created_at
 		}));
