@@ -15,26 +15,6 @@ export async function login(formData: FormData) {
     password: formData.get('password') as string,
   }
 
-  // Fetch user from the database
-  const { data: user, error: fetchError } = await supabase
-    .from('user_data')
-    .select('password')
-    .eq('email', data.email)
-    .single()
-
-  if (fetchError || !user) {
-    console.log("Fetch error:", fetchError)
-    redirect('/latest/error')
-  }
-
-  // Compare the provided password with the stored hash
-  const passwordMatch = await bcrypt.compare(data.password, user.password)
-
-  if (!passwordMatch) {
-    console.log("Password does not match")
-    redirect('/latest/error')
-  }
-
   // Sign in the user
   const { data: sessionData, error } = await supabase.auth.signInWithPassword({
     email: data.email,
