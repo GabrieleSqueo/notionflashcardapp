@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { MdContentCopy, MdCheck, MdEdit, MdDelete, MdPlayArrow, MdRefresh } from 'react-icons/md';
+import { MdContentCopy, MdCheck, MdDelete, MdPlayArrow, MdRefresh, MdInfo } from 'react-icons/md';
 
 // ActionButton component
 const ActionButton = ({ icon: Icon, text, onClick, bgColor }) => (
@@ -125,12 +125,6 @@ export default function FlashcardSetDetails() {
                                             bgColor="bg-green-500"
                                         />
                                         <ActionButton 
-                                            icon={MdEdit} 
-                                            text="Edit Set" 
-                                            onClick={() => {/* Add logic to edit set */}} 
-                                            bgColor="bg-blue-500"
-                                        />
-                                        <ActionButton 
                                             icon={MdDelete} 
                                             text="Delete Set" 
                                             onClick={() => {/* Add logic to delete set */}} 
@@ -174,13 +168,18 @@ export default function FlashcardSetDetails() {
                                             </p>
                                         )}
                                     </div>
+
+                                    {/* Updated text section */}
+                                    <div className="flex items-center mt-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-700 rounded-md">
+                                        <MdInfo className="h-5 w-5 mr-2" />
+                                        <span className="text-sm">You can only modify your flashcards on Notion.</span>
+                                    </div>
                                 </div>
                             </div>
 
                             <FlashcardList flashcards={flashcards} />
                         </>
                     )}
-
                 </div>
             </main>
         </div>
