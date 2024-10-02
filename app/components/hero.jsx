@@ -72,9 +72,9 @@ const Hero = ({ backgroundColor }) => {
             transition={{ delay: 0.6, duration: 0.8 }}
             className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold text-white leading-tight"
           >
-            <span className="block">Ace Your Studies</span>
-            <span className="block mt-2 sm:mt-3">Without Ever</span>
-            <span className="block mt-2 sm:mt-3 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">Leaving Notion</span>
+            <span className="block">Cut the Bullshit</span>
+            <span className="block mt-2 sm:mt-3"></span>
+            <span className="block mt-2 sm:mt-3 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 ">Just Use Notion</span>
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
