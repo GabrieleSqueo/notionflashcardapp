@@ -42,7 +42,7 @@ const DashboardFooter = ({ isNotionConnected }) => {
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
                 removeActiveClass();
-                action();
+                action(e);
             });
         });
 
