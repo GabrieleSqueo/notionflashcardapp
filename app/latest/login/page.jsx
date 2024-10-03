@@ -1,12 +1,11 @@
 'use client'
 
 import React, { useState, Suspense } from 'react'
-import { login, signup } from './actions'
+import { login } from './actions' // Removed signup import
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 function LoginForm() {
-  const [isLogin, setIsLogin] = useState(true)
   const [error, setError] = useState(null)
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -18,16 +17,11 @@ function LoginForm() {
 
     const formData = new FormData(event.target)
     try {
-      if (isLogin) {
-        await login(formData)
-        if (fromEmbed) {
-          router.push(`/embed/${fromEmbed}`)
-        } else {
-          router.push('/latest')
-        }
+      await login(formData) // Only login logic remains
+      if (fromEmbed) {
+        router.push(`/embed/${fromEmbed}`)
       } else {
-        await signup(formData)
-        router.push('/latest/login')
+        router.push('/latest')
       }
     } catch (e) {
       setError(e.message)
@@ -35,13 +29,11 @@ function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            {isLogin ? 'Sign in to your account' : 'Create a new account'}
-          </h2>
-        </div>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 bg-white shadow-md rounded-lg p-8">
+        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          Sign in to your account
+        </h2>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <input type="hidden" name="remember" defaultValue="true" />
           <div className="rounded-md shadow-sm -space-y-px">
@@ -55,7 +47,7 @@ function LoginForm() {
                 type="email"
                 autoComplete="email"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring focus:ring-indigo-500"
                 placeholder="Email address"
               />
             </div>
@@ -67,28 +59,12 @@ function LoginForm() {
                 id="password"
                 name="password"
                 type="password"
-                autoComplete={isLogin ? "current-password" : "new-password"}
+                autoComplete="current-password"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring focus:ring-indigo-500"
                 placeholder="Password"
               />
             </div>
-            {!isLogin && (
-              <div>
-                <label htmlFor="username" className="sr-only">
-                  Username
-                </label>
-                <input
-                  id="username"
-                  name="username"
-                  type="text"
-                  autoComplete="username"
-                  required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                  placeholder="Username"
-                />
-              </div>
-            )}
           </div>
 
           {error && (
@@ -100,17 +76,14 @@ function LoginForm() {
               type="submit"
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
-              {isLogin ? 'Sign in' : 'Sign up'}
+              Sign in
             </button>
           </div>
         </form>
         <div className="text-center">
-          <button
-            onClick={() => setIsLogin(!isLogin)}
-            className="font-medium text-indigo-600 hover:text-indigo-500"
-          >
-            {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
-          </button>
+          <Link href="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
+            Don't have an account? Sign up
+          </Link>
         </div>
         <div className="text-center">
           <Link href="/" className="font-medium text-gray-600 hover:text-gray-500">
