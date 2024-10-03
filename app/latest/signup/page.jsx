@@ -25,6 +25,17 @@ export default async function Signup({ searchParams }) {
           action={signUp} // This will call the signUp function on form submission
         >
           <div>
+            <label className="text-md" htmlFor="username">
+              Username
+            </label>
+            <input
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-500"
+              name="username"
+              placeholder="Your username"
+              required
+            />
+          </div>
+          <div>
             <label className="text-md" htmlFor="email">
               Email
             </label>
@@ -57,6 +68,17 @@ export default async function Signup({ searchParams }) {
               name="confirmPassword"
               placeholder="••••••••"
               required
+            />
+          </div>
+          <div>
+            <label className="text-md" htmlFor="notionKey">
+              Notion Key (optional)
+            </label>
+            <input
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-500"
+              type="text"
+              name="notionKey"
+              placeholder="Your Notion integration key"
             />
           </div>
           <button className="w-full bg-indigo-600 text-white rounded-md px-4 py-2 hover:bg-indigo-700 transition duration-200">
