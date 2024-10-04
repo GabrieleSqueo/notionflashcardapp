@@ -26,7 +26,7 @@ export default function NewProjectPage() {
         if (!response.ok) {
           throw new Error(result.message || `HTTP error! status: ${response.status}`);
         }
-
+        console.log("----RESULT: ", JSON.stringify(result, null, 2));
         setPages(result.pages); // Set pages directly from the result
         setStatus('');
       } catch (error) {
