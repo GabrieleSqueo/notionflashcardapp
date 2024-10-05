@@ -175,7 +175,7 @@ export default function FlashcardSetDetails() {
 
                                     <div className="bg-gray-100 p-6 rounded-xl shadow-inner">
                                         <h3 className="text-xl font-semibold mb-3 text-indigo-600">Embed This Flashcard Set</h3>
-                                        <p className="text-gray-600 mb-4">Copy the link below to embed this flashcard set on your website:</p>
+                                        <p className="text-gray-600 mb-4">Copy the link below to embed this flashcard set on your Notion page:</p>
                                         <div className="flex items-center">
                                             <div className="relative flex-grow">
                                                 <input 

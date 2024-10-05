@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect } from 'react'
-import { MdLightMode, MdDarkMode } from 'react-icons/md'
+import { MdLightMode, MdDarkMode, MdAddCircle } from 'react-icons/md'
 
 export default function EmbeddedComponent({ embed_id }) {
   const [flashcards, setFlashcards] = useState([])
@@ -69,7 +69,22 @@ export default function EmbeddedComponent({ embed_id }) {
   }
 
   if (flashcards.length === 0) {
-    return <div className="text-gray-500 text-center p-4">It seems a bit empty here...</div>
+    return (
+      <div className={`flex flex-col items-center justify-center w-full h-screen p-4 transition-colors duration-300 ${isDarkMode ? 'bg-[#191919] text-white' : 'bg-white text-gray-800'}`}>
+        <div className="text-center max-w-md">
+          <h2 className="text-2xl font-bold mb-4">It seems a bit empty here...</h2>
+          <p className="mb-6">
+            This flashcard set doesn't have any cards yet. Why not add some to start learning?
+          </p>
+        </div>
+        <button 
+          onClick={toggleDarkMode} 
+          className="mt-8 p-2 rounded-full bg-yellow-400 text-gray-900 shadow-[0_5px_0_rgb(202,138,4)] focus:outline-none transition-all duration-150 active:shadow-[0_0_0_rgb(202,138,4)] active:translate-y-[5px]"
+        >
+          {isDarkMode ? <MdLightMode size={24} /> : <MdDarkMode size={24} />}
+        </button>
+      </div>
+    )
   }
 
   const currentCard = flashcards[currentCardIndex]
