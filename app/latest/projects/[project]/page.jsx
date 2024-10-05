@@ -17,13 +17,13 @@ const ActionButton = ({ icon: Icon, text, onClick, bgColor }) => (
 // FlashcardList component
 const FlashcardList = ({ flashcards }) => {
     if (!flashcards || typeof flashcards !== 'object') {
-        return <p>No flashcards available.</p>;
+        return <p className="text-center text-black mt-8">No flashcards available.</p>;
     }
 
     const flashcardArray = Array.isArray(flashcards) ? flashcards : Object.values(flashcards);
 
     if (flashcardArray.length === 0) {
-        return <p>No flashcards available.</p>;
+        return <p className="text-center text-black mt-8">No flashcards available.</p>;
     }
 
     return (
@@ -93,6 +93,7 @@ export default function FlashcardSetDetails() {
                     throw new Error('Failed to fetch flashcard set');
                 }
                 const setData = await setResponse.json();
+                console.log("SET DATA: ", setData);
                 setFlashcardSet(setData);
 
                 // Fetch flashcards
@@ -127,6 +128,21 @@ export default function FlashcardSetDetails() {
         setIsModalOpen(false);
     };
 
+    const formatDate = (dateString) => {
+        if (!dateString) return 'Date not available';
+        
+        const date = new Date(dateString);
+        const options = { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric', 
+            hour: '2-digit', 
+            minute: '2-digit',
+            hour12: true
+        };
+        return date.toLocaleString('en-US', options);
+    };
+
     if (loading) return <LoadingSpinner />;
     if (error) return <ErrorMessage message={error} />;
 
@@ -136,11 +152,11 @@ export default function FlashcardSetDetails() {
                 <div className="px-4 py-6 sm:px-0">
                     {flashcardSet && (
                         <>
-                            <h2 className="text-3xl font-bold text-gray-900 mb-6">{flashcardSet.title}</h2>
+                            <h2 className="text-3xl font-bold text-gray-900 mb-6">{flashcardSet.set_name}</h2>
                             
                             <div className="bg-white rounded-xl shadow-md overflow-hidden mb-8">
                                 <div className="p-6">
-                                    <p className="text-gray-600 mb-6">{flashcardSet.description}</p>
+                                    <p className="text-black mb-6">Created on: {formatDate(flashcardSet.created_at)}</p>
                                     
                                     <div className="flex flex-wrap gap-4 mb-8">
                                         <ActionButton 
@@ -164,7 +180,7 @@ export default function FlashcardSetDetails() {
                                             <div className="relative flex-grow">
                                                 <input 
                                                     type="text" 
-                                                    value={`${window.location.origin}/embed/${project}`}
+                                                    value={`https://www.notionflashcards.com/embed/${project}`}
                                                     readOnly
                                                     className="w-full p-3 pr-24 border-2 text-black border-indigo-200 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors duration-200"
                                                 />
