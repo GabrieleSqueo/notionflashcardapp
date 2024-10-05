@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { MdAddCircle, MdCheck } from 'react-icons/md';
+import { useRouter } from 'next/navigation';
 
 export default function NewProjectPage() {
   const [status, setStatus] = useState('');
   const [pages, setPages] = useState([]); // Ensure this is initialized as an empty array
   const [selectedPageId, setSelectedPageId] = useState('');
   const [selectedPageName, setSelectedPageName] = useState(''); // New state for selected page name
+  const router = useRouter();
 
   useEffect(() => {
     const fetchPages = async () => {
@@ -65,6 +67,13 @@ export default function NewProjectPage() {
       }
 
       setStatus(result.message);
+      
+      // Redirect to the new project page using the flashcardSet id
+      if (result.success && result.flashcardSet && result.flashcardSet.set_id) {
+        router.push(`/latest/projects/${result.flashcardSet.set_id}`);
+      } else {
+        setStatus('Project created, but no flashcard set ID was returned.');
+      }
     } catch (error) {
       console.error('Error:', error);
       setStatus(`Error: ${error.message}`);
