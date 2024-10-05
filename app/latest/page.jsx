@@ -8,8 +8,8 @@ import DashboardFooter from './components/DashboardFooter'
 export default async function HomePage() {
     const supabase = createClient()
 
-    const { data, error: supabaseError } = await supabase.auth.getUser()
-    if (supabaseError || !data?.user) {
+    const { data, error } = await supabase.auth.getUser()
+    if (error || !data?.user) {
         redirect('/latest/login')
     }
 
@@ -19,7 +19,7 @@ export default async function HomePage() {
     // Check if the user has a Notion key
     const { data: userData, error: userError } = await supabase
         .from('user_data')
-        .select('notion_key')
+        .select('notion_key, username')
         .eq('user_id', data.user.id)
         .single()
 
@@ -28,11 +28,12 @@ export default async function HomePage() {
     }
 
     const isNotionConnected = !!userData?.notion_key
+    const username = userData?.username || 'User'
 
     return (
         <div className="min-h-screen bg-gray-100">
-            {data && data.user && data.user.user_metadata && (
-                <Navbar username={data.user.user_metadata.username || 'User'} />
+            {data && data.user && (
+                <Navbar username={username} />
             )}
             <MainContent isNotionConnected={isNotionConnected} />
             <DashboardFooter isNotionConnected={isNotionConnected} />
