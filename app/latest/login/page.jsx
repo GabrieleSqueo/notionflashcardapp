@@ -81,7 +81,7 @@ function LoginForm() {
           </div>
         </form>
         <div className="text-center">
-          <Link href="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
+          <Link href="/latest/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
             Don't have an account? Sign up
           </Link>
         </div>

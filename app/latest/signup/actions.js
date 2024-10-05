@@ -1,59 +1,52 @@
+'use server';
+
 import { createClient } from '../../utils/supabase/server';
 import { headers } from 'next/headers';
 
-export const signup = async (formData) => {
+export async function signup(formData) {
   const supabase = createClient();
   const origin = headers().get('origin');
-  
-  const username = formData.get('username'); // Get the username
-  const email = formData.get('email');
-  const password = formData.get('password');
-  const confirmPassword = formData.get('confirmPassword');
 
-  if (password !== confirmPassword) {
-    throw new Error('Passwords do not match');
+  const email = formData.get("email")?.toString();
+  const password = formData.get("password")?.toString();
+  const confirmPassword = formData.get("confirmPassword")?.toString();
+  const username = formData.get("username")?.toString();
+
+  if (!email || !password || !confirmPassword || !username) {
+    return { error: 'All fields are required' };
   }
 
-  // Log the input values for debugging
-  console.log('Signing up with:', { username, email, password });
+  if (password !== confirmPassword) {
+    return { error: 'Passwords do not match' };
+  }
 
-  const { user, error } = await supabase.auth.signUp({
+  // Sign up the user
+  const { data: authData, error: authError } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      emailRedirectTo: `${origin}/latest/login`,
-      data: { username }, // Store the username in the user metadata
+      emailRedirectTo: `${origin}/auth/callback`,
     },
   });
 
-  // Log the error if it exists
-  if (error) {
-    console.error('Sign up error:', error);
-    throw new Error('Could not authenticate user');
-  }
-  
-  console.log(user);
-  // Check if user is defined
-  if (!user) {
-    throw new Error('User object is undefined');
+  if (authError) {
+    console.error(authError.code + " " + authError.message);
+    return { error: 'Could not authenticate user' };
   }
 
-  // Insert user data into the user_data table
+  // Add user data to the user_data table
   const { error: userDataError } = await supabase
     .from('user_data')
-    .insert([
-      {
-        user_id: user.id,
-        email,
-        username,
-        created_at: new Date(),
-      },
-    ]);
+    .insert({
+      user_id: authData.user.id,
+      email: email,
+      username: username,
+    });
 
   if (userDataError) {
-    console.error('User data error:', userDataError);
-    throw new Error('Could not save user data');
+    console.error(userDataError.code + " " + userDataError.message);
+    return { error: 'Could not create user data' };
   }
 
-  return { message: `Check email (${email}) to continue sign-in process` };
-};
+  return { message: "Thanks for signing up! Please check your email to complete the registration process." };
+}
