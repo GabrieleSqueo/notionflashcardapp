@@ -25,7 +25,7 @@ export async function signup(formData) {
     email,
     password,
     options: {
-      emailRedirectTo: `${origin}/auth/callback`,
+      emailRedirectTo: `https://notionflashcard.com/auth/callback`,
     },
   });
 
