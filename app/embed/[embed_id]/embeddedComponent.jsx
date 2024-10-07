@@ -1,6 +1,11 @@
 "use client"
 import { useState, useEffect } from 'react'
-import { MdLightMode, MdDarkMode, MdAddCircle } from 'react-icons/md'
+import { MdLightMode, MdDarkMode } from 'react-icons/md'
+import { calculateScore, getScoreLabel, getScoreColor } from './scoringLogic'
+import { Bar } from 'react-chartjs-2'
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js'
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 export default function EmbeddedComponent({ embed_id }) {
   const [flashcards, setFlashcards] = useState([])
@@ -8,6 +13,8 @@ export default function EmbeddedComponent({ embed_id }) {
   const [currentCardIndex, setCurrentCardIndex] = useState(0)
   const [isFlipped, setIsFlipped] = useState(false)
   const [isDarkMode, setIsDarkMode] = useState(false)
+  const [scores, setScores] = useState([])
+  const [showResults, setShowResults] = useState(false)
 
   useEffect(() => {
     const fetchContent = async () => {
@@ -26,14 +33,15 @@ export default function EmbeddedComponent({ embed_id }) {
     fetchContent()
   }, [embed_id])
 
-  const nextCard = () => {
-    setCurrentCardIndex((prevIndex) => (prevIndex + 1) % flashcards.length)
-    setIsFlipped(false)
-  }
+  const nextCard = (score) => {
+    setScores(prevScores => [...prevScores, score])
 
-  const prevCard = () => {
-    setCurrentCardIndex((prevIndex) => (prevIndex - 1 + flashcards.length) % flashcards.length)
-    setIsFlipped(false)
+    if (currentCardIndex === flashcards.length - 1) {
+      setShowResults(true)
+    } else {
+      setCurrentCardIndex(prevIndex => prevIndex + 1)
+      setIsFlipped(false)
+    }
   }
 
   const toggleFlip = () => {
@@ -44,25 +52,16 @@ export default function EmbeddedComponent({ embed_id }) {
     setIsDarkMode(!isDarkMode)
   }
 
-  const handleButtonClick = (e, action) => {
-    const button = e.currentTarget;
-    button.classList.add('active');
-    
-    const removeActiveClass = () => {
-      button.classList.remove('active');
-    };
+  const handleScoreClick = (score) => {
+    nextCard(score)
+  }
 
-    // Use requestAnimationFrame for smoother animation
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        removeActiveClass();
-        action();
-      });
-    });
-
-    // Fallback timeout in case the button is still in the DOM
-    setTimeout(removeActiveClass, 150);
-  };
+  const resetQuiz = () => {
+    setCurrentCardIndex(0)
+    setIsFlipped(false)
+    setScores([])
+    setShowResults(false)
+  }
 
   if (error) {
     return <div className="text-red-500 text-center p-4">Error: {error}</div>
@@ -70,7 +69,7 @@ export default function EmbeddedComponent({ embed_id }) {
 
   if (flashcards.length === 0) {
     return (
-      <div className={`flex flex-col items-center justify-center w-full h-screen p-4 transition-colors duration-300 ${isDarkMode ? 'bg-[#191919] text-white' : 'bg-white text-gray-800'}`}>
+      <div className={`flex flex-col items-center justify-center w-full h-screen p-4 transition-colors duration-300 ${isDarkMode ? 'bg-[#191919] text-white' : 'bg-white'}`}>
         <div className="text-center max-w-md">
           <h2 className="text-2xl font-bold mb-4">It seems a bit empty here...</h2>
           <p className="mb-6">
@@ -79,9 +78,56 @@ export default function EmbeddedComponent({ embed_id }) {
         </div>
         <button 
           onClick={toggleDarkMode} 
-          className="mt-8 p-2 rounded-full bg-yellow-400 text-gray-900 shadow-[0_5px_0_rgb(202,138,4)] focus:outline-none transition-all duration-150 active:shadow-[0_0_0_rgb(202,138,4)] active:translate-y-[5px]"
+          className="mt-8 p-2 rounded-full bg-yellow-400 text-gray-900 shadow-[0_5px_0_rgb(202,138,4)] focus:outline-none"
         >
           {isDarkMode ? <MdLightMode size={24} /> : <MdDarkMode size={24} />}
+        </button>
+      </div>
+    )
+  }
+
+  if (showResults) {
+    const scoreCounts = scores.reduce((acc, score) => {
+      acc[score] = (acc[score] || 0) + 1;
+      return acc;
+    }, {});
+
+    const labels = ["Don't know", "Need to review", "Almost got it", "Know it!"];
+    const data = {
+      labels,
+      datasets: [
+        {
+          label: 'Number of Cards',
+          data: labels.map((_, index) => scoreCounts[index + 1] || 0),
+          backgroundColor: labels.map((_, index) => getScoreColor(index + 1)),
+        },
+      ],
+    }
+
+    const options = {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            stepSize: 1,
+            precision: 0
+          }
+        }
+      }
+    }
+
+    return (
+      <div className={`flex flex-col items-center justify-center w-full h-screen p-4 transition-colors duration-300 ${isDarkMode ? 'bg-[#191919] text-white' : 'bg-white'}`}>
+        <h2 className="text-2xl font-bold mb-4">Your Results</h2>
+        <div className="w-full max-w-4xl">
+          <Bar data={data} options={options} />
+        </div>
+        <button 
+          onClick={resetQuiz}
+          className="mt-8 px-4 py-2 bg-indigo-600 text-white rounded-xl shadow-[0_3px_0_rgb(67,56,202)] text-sm font-bold transition-all duration-150 active:shadow-[0_0_0_rgb(67,56,202)] active:translate-y-[3px] hover:bg-indigo-700"
+        >
+          Restart Quiz
         </button>
       </div>
     )
@@ -93,10 +139,10 @@ export default function EmbeddedComponent({ embed_id }) {
     <div className={`flex flex-col items-center justify-between w-full h-screen p-4 transition-colors duration-300 ${isDarkMode ? 'bg-[#191919] text-white' : 'bg-white'}`}>
       <div className="w-full max-w-4xl flex-grow flex flex-col justify-center items-center perspective">
         <div 
-          className={`relative w-full h-full max-h-[70vh] transition-transform duration-500 transform-style-3d ${isFlipped ? 'rotate-y-180' : ''}`}
+          className={`relative w-full h-full max-h-[70vh] cursor-pointer transition-transform duration-500 transform-style-3d ${isFlipped ? 'rotate-y-180' : ''}`} 
           onClick={toggleFlip}
         >
-          <div className={`absolute w-full h-full backface-hidden rounded-xl p-6 flex items-center justify-center cursor-pointer ${
+          <div className={`absolute w-full h-full backface-hidden rounded-xl p-6 flex items-center justify-center ${
             isDarkMode 
               ? 'bg-gray-800 shadow-[0_5px_0_rgb(59,130,246)]' 
               : 'bg-gray-100 shadow-[0_5px_0_rgb(34,197,94)]'
@@ -105,7 +151,7 @@ export default function EmbeddedComponent({ embed_id }) {
               {currentCard.front}
             </p>
           </div>
-          <div className={`absolute w-full h-full backface-hidden rounded-xl p-6 flex items-center justify-center rotate-y-180 cursor-pointer ${
+          <div className={`absolute w-full h-full backface-hidden rounded-xl p-6 flex items-center justify-center rotate-y-180 ${
             isDarkMode 
               ? 'bg-gray-800 shadow-[0_5px_0_rgb(59,130,246)]' 
               : 'bg-gray-100 shadow-[0_5px_0_rgb(34,197,94)]'
@@ -116,26 +162,42 @@ export default function EmbeddedComponent({ embed_id }) {
           </div>
         </div>
       </div>
-      <div className="flex justify-between items-center mt-4 w-full max-w-4xl">
-        <button 
-          onClick={(e) => handleButtonClick(e, prevCard)} 
-          className="px-6 py-3 bg-green-500 text-white rounded-xl shadow-[0_5px_0_rgb(18,142,63)] text-xl md:text-2xl font-bold transition-all duration-150 active:shadow-[0_0_0_rgb(18,142,63)] active:translate-y-[5px]"
+      <div className="w-full max-w-4xl mt-8 flex justify-between">
+        <button
+          onClick={() => handleScoreClick(1)}
+          className="px-4 py-2 bg-red-500 text-white rounded-xl shadow-[0_3px_0_rgb(185,28,28)] text-sm font-bold transition-all duration-300 active:shadow-[0_0_0_rgb(185,28,28)] active:translate-y-[3px] hover:bg-red-600 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
         >
-          ← Prev
+          Don't know 😕
+          <span className="absolute inset-0 rounded-xl bg-white opacity-25 animate-ripple"></span>
         </button>
-        <p className={`text-center text-sm md:text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-          Card {currentCardIndex + 1} of {flashcards.length}
-        </p>
-        <button 
-          onClick={(e) => handleButtonClick(e, nextCard)} 
-          className="px-6 py-3 bg-green-500 text-white rounded-xl shadow-[0_5px_0_rgb(18,142,63)] text-xl md:text-2xl font-bold transition-all duration-150 active:shadow-[0_0_0_rgb(18,142,63)] active:translate-y-[5px]"
+        <button
+          onClick={() => handleScoreClick(2)}
+          className="px-4 py-2 bg-orange-500 text-white rounded-xl shadow-[0_3px_0_rgb(194,65,12)] text-sm font-bold transition-all duration-300 active:shadow-[0_0_0_rgb(194,65,12)] active:translate-y-[3px] hover:bg-orange-600 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50"
         >
-          Next →
+          Need to review 🤔
+          <span className="absolute inset-0 rounded-xl bg-white opacity-25 animate-ripple"></span>
+        </button>
+        <button
+          onClick={() => handleScoreClick(3)}
+          className="px-4 py-2 bg-yellow-500 text-white rounded-xl shadow-[0_3px_0_rgb(161,98,7)] text-sm font-bold transition-all duration-300 active:shadow-[0_0_0_rgb(161,98,7)] active:translate-y-[3px] hover:bg-yellow-600 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50"
+        >
+          Almost got it 🙂
+          <span className="absolute inset-0 rounded-xl bg-white opacity-25 animate-ripple"></span>
+        </button>
+        <button
+          onClick={() => handleScoreClick(4)}
+          className="px-4 py-2 bg-green-500 text-white rounded-xl shadow-[0_3px_0_rgb(21,128,61)] text-sm font-bold transition-all duration-300 active:shadow-[0_0_0_rgb(21,128,61)] active:translate-y-[3px] hover:bg-green-600 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+        >
+          Know it! 😄
+          <span className="absolute inset-0 rounded-xl bg-white opacity-25 animate-ripple"></span>
         </button>
       </div>
+      <p className={`mt-4 text-center text-sm md:text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+        Card {currentCardIndex + 1} of {flashcards.length}
+      </p>
       <button 
-        onClick={(e) => handleButtonClick(e, toggleDarkMode)} 
-        className="mt-4 p-2 rounded-full bg-yellow-400 text-gray-900 shadow-[0_5px_0_rgb(202,138,4)] focus:outline-none transition-all duration-150 active:shadow-[0_0_0_rgb(202,138,4)] active:translate-y-[5px]"
+        onClick={toggleDarkMode} 
+        className="mt-4 p-2 rounded-full bg-yellow-400 text-gray-900 shadow-[0_5px_0_rgb(202,138,4)] focus:outline-none"
       >
         {isDarkMode ? <MdLightMode size={24} /> : <MdDarkMode size={24} />}
       </button>
