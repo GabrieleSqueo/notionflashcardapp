@@ -45,7 +45,8 @@ export async function POST(req) {
     });
 
     const searchData = await searchResponse.json();
-    if (searchData.results.length === 0) throw new Error('Notion page not found');
+    console.log('Search data:', searchData);
+    if (!searchData.results || searchData.results.length === 0) throw new Error('Notion page not found');
 
     const parentPageId = searchData.results[0].id;
 
@@ -71,7 +72,10 @@ export async function POST(req) {
     });
 
     const datasSearchData = await datasSearchResponse.json();
-    if (datasSearchData.results.length === 0) throw new Error('Datas_ page not found');
+    console.log('Datas search data:', datasSearchData);
+    if (!datasSearchData.results || datasSearchData.results.length === 0) {
+      throw new Error('Datas_ page not found');
+    }
 
     const datasPageId = datasSearchData.results[0].id;
 
