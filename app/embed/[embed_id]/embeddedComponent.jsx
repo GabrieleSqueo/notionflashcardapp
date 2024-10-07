@@ -71,8 +71,8 @@ export default function EmbeddedComponent({ embed_id }) {
     return (
       <div className={`flex flex-col items-center justify-center w-full h-screen p-4 transition-colors duration-300 ${isDarkMode ? 'bg-[#191919] text-white' : 'bg-white'}`}>
         <div className="text-center max-w-md">
-          <h2 className="text-2xl font-bold mb-4">It seems a bit empty here...</h2>
-          <p className="mb-6">
+          <h2 className="text-2xl font-bold mb-4 text-black">It seems a bit empty here...</h2>
+          <p className="mb-6 text-black">
             This flashcard set doesn't have any cards yet. Why not add some to start learning?
           </p>
         </div>
@@ -106,6 +106,7 @@ export default function EmbeddedComponent({ embed_id }) {
 
     const options = {
       responsive: true,
+      maintainAspectRatio: false,
       scales: {
         y: {
           beginAtZero: true,
@@ -113,19 +114,46 @@ export default function EmbeddedComponent({ embed_id }) {
             stepSize: 1,
             precision: 0
           }
+        },
+        x: {
+          ticks: {
+            autoSkip: true,
+            maxRotation: 0,
+            minRotation: 0
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              return `${context.parsed.y} cards`;
+            }
+          }
         }
       }
     }
 
     return (
       <div className={`flex flex-col items-center justify-center w-full h-screen p-4 transition-colors duration-300 ${isDarkMode ? 'bg-[#191919] text-white' : 'bg-white'}`}>
-        <h2 className="text-2xl font-bold mb-4">Your Results</h2>
-        <div className="w-full max-w-4xl">
+        <h2 className="text-xl sm:text-2xl font-bold mb-4 text-black">Your Results</h2>
+        <div className="w-full max-w-4xl h-[50vh] sm:h-[60vh]">
           <Bar data={data} options={options} />
+        </div>
+        <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs sm:text-sm">
+          {labels.map((label, index) => (
+            <div key={label} className="flex items-center">
+              <div className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" style={{ backgroundColor: getScoreColor(index + 1) }}></div>
+              <span>{label}: {scoreCounts[index + 1] || 0}</span>
+            </div>
+          ))}
         </div>
         <button 
           onClick={resetQuiz}
-          className="mt-8 px-4 py-2 bg-indigo-600 text-white rounded-xl shadow-[0_3px_0_rgb(67,56,202)] text-sm font-bold transition-all duration-150 active:shadow-[0_0_0_rgb(67,56,202)] active:translate-y-[3px] hover:bg-indigo-700"
+          className="mt-4 sm:mt-8 px-4 py-2 bg-indigo-600 text-white rounded-xl shadow-[0_3px_0_rgb(67,56,202)] text-sm font-bold transition-all duration-150 active:shadow-[0_0_0_rgb(67,56,202)] active:translate-y-[3px] hover:bg-indigo-700"
         >
           Restart Quiz
         </button>
