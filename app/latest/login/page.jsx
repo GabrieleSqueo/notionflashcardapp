@@ -113,11 +113,6 @@ function LoginForm() {
           <Link href="/latest/signup" className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors duration-200">
             Don't have an account? Sign up
           </Link>
-          <div>
-            <Link href="/" className="font-medium text-gray-600 hover:text-gray-500 transition-colors duration-200">
-              Back to Home
-            </Link>
-          </div>
         </div>
       </div>
     </div>

@@ -119,11 +119,6 @@ export default function SignUp() {
           <Link href="/latest/login" className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors duration-200">
             Already have an account? Log in
           </Link>
-          <div>
-            <Link href="/" className="font-medium text-gray-600 hover:text-gray-500 transition-colors duration-200">
-              Back to Home
-            </Link>
-          </div>
         </div>
       </div>
     </div>
