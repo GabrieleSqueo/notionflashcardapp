@@ -49,26 +49,7 @@ export async function POST(req) {
 
     const parentPageId = searchData.results[0].id;
 
-    // Search for the "flashcards" subpage
-    const flashcardsSearchResponse = await fetch(`https://api.notion.com/v1/search`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${notionApiKey}`,
-        'Notion-Version': '2022-06-28',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        query: `${setLink} flashcards`,
-        filter: { property: 'object', value: 'page' }
-      })
-    });
-
-    const flashcardsSearchData = await flashcardsSearchResponse.json();
-    if (flashcardsSearchData.results.length === 0) throw new Error('Flashcards page not found');
-
-    const flashcardsPageId = flashcardsSearchData.results[0].id;
-
-    // Search for the "datas_" subpage
+    // Search for the "datas_" subpage directly under the main set_link page
     const datasSearchResponse = await fetch(`https://api.notion.com/v1/search`, {
       method: 'POST',
       headers: {
@@ -78,7 +59,14 @@ export async function POST(req) {
       },
       body: JSON.stringify({
         query: 'datas_',
-        filter: { property: 'object', value: 'page' }
+        filter: {
+          property: 'object',
+          value: 'page'
+        },
+        parent: {
+          type: 'page_id',
+          page_id: parentPageId
+        }
       })
     });
 

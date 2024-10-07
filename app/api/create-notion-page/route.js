@@ -259,10 +259,66 @@ export async function POST(request) {
                 throw new Error(`Error fetching updated flashcard set: ${JSON.stringify(fetchError)}`);
             }
 
+            // Create the "datas_" page
+            const datasPageResponse = await fetch('https://api.notion.com/v1/pages', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${notionKey}`,
+                    'Content-Type': 'application/json',
+                    'Notion-Version': '2022-06-28',
+                },
+                body: JSON.stringify({
+                    parent: { page_id: pageId },
+                    icon: {
+                        type: "emoji",
+                        emoji: "📊"
+                    },
+                    cover: {
+                        type: "external",
+                        external: {
+                            url: "https://images.unsplash.com/photo-1518186285589-2f7649de83e0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80"
+                        }
+                    },
+                    properties: {
+                        title: {
+                            title: [
+                                {
+                                    text: {
+                                        content: "datas_",
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                    children: [
+                        {
+                            object: 'block',
+                            type: 'paragraph',
+                            paragraph: {
+                                rich_text: [{
+                                    type: 'text',
+                                    text: {
+                                        content: 'This page contains data about your flashcard usage.',
+                                    },
+                                    annotations: {
+                                        color: 'gray'
+                                    }
+                                }],
+                            },
+                        },
+                    ],
+                }),
+            });
+
+            if (!datasPageResponse.ok) {
+                throw new Error('Failed to create datas_ page');
+            }
+
             return NextResponse.json({ 
                 success: true, 
                 message: 'Notion page and flashcard set created successfully!',
-                flashcardSet: updatedFlashcardSet
+                flashcardSet: updatedFlashcardSet,
+                pageId: pageId
             });
         } else {
             return NextResponse.json({ success: false, message: 'Invalid action or missing pageId' }, { status: 400 });
