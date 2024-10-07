@@ -52,9 +52,35 @@ export default function EmbeddedComponent({ embed_id }) {
     setIsDarkMode(!isDarkMode)
   }
 
+  const saveScores = async () => {
+    try {
+      const response = await fetch('/api/save-scores', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          flashcardSetId: embed_id,
+          scores: scores,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save scores');
+      }
+
+      console.log('Scores saved successfully');
+    } catch (error) {
+      console.error('Error saving scores:', error);
+    }
+  };
+
   const handleScoreClick = (score) => {
-    nextCard(score)
-  }
+    nextCard(score);
+    if (currentCardIndex === flashcards.length - 1) {
+      saveScores();
+    }
+  };
 
   const resetQuiz = () => {
     setCurrentCardIndex(0)
