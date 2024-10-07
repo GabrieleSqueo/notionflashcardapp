@@ -11,7 +11,13 @@ function LoginForm() {
   const [error, setError] = useState(null)
   const router = useRouter()
   const searchParams = useSearchParams()
-  const fromEmbed = searchParams.get('from_embed')
+  const errorMessage = searchParams.get('error')
+
+  useEffect(() => {
+    if (errorMessage) {
+      setError(decodeURIComponent(errorMessage))
+    }
+  }, [errorMessage])
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -30,14 +36,16 @@ function LoginForm() {
 
     const formData = new FormData(event.target)
     try {
-      await login(formData)
-      if (fromEmbed) {
-        router.push(`/embed/${fromEmbed}`)
+      const result = await login(formData)
+      if (result.error) {
+        setError(result.error)
       } else {
+        // Successful login
         router.push('/latest')
       }
     } catch (e) {
-      setError(e.message)
+      console.error('Login error:', e)
+      setError('An unexpected error occurred. Please try again.')
     }
   }
 
@@ -87,7 +95,8 @@ function LoginForm() {
 
           {error && (
             <div className="text-red-500 text-sm mt-2 bg-red-100 border border-red-400 rounded-lg p-3">
-              {error}
+              <p className="font-semibold">Error:</p>
+              <p>{error}</p>
             </div>
           )}
 

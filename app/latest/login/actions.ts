@@ -8,48 +8,31 @@ import { ResponseCookie } from 'next/dist/compiled/@edge-runtime/cookies'
 import bcrypt from 'bcrypt'
 
 export async function login(formData: FormData) {
+  const email = formData.get('email') as string
+  const password = formData.get('password') as string
+
   const supabase = createClient()
 
-  const data = {
-    email: formData.get('email') as string,
-    password: formData.get('password') as string,
-  }
-
-  // Sign in the user
-  const { data: sessionData, error } = await supabase.auth.signInWithPassword({
-    email: data.email,
-    password: data.password,
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
   })
 
   if (error) {
-    if (error.message.includes('Invalid Refresh Token')) {
-      console.error('Invalid refresh token:', error)
-      // Clear any existing cookies
-      const cookieStore = cookies()
-      cookieStore.delete('supabase-auth-token')
-      // Redirect to login page with an error message
-      redirect('/latest/login?error=session_expired')
-    }
     console.error('Login error:', error)
-    redirect('/latest/error')
-  }
-
-  if (sessionData?.session) {
-    const cookieStore = cookies()
-  
-    const cookieOptions: Partial<ResponseCookie> = {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      maxAge: 60 * 60 * 24 * 7, // 1 week
-      path: '/',
+    
+    if (error.message.includes('Invalid login credentials')) {
+      return { error: 'Invalid email or password. Please try again.' }
+    } else if (error.message.includes('Invalid Refresh Token')) {
+      return { error: 'Your session has expired. Please log in again.' }
+    } else if (error.message.includes('Email not confirmed')) {
+      return { error: 'Please confirm your email address before logging in.' }
+    } else {
+      return { error: 'An error occurred during login. Please try again later.' }
     }
-  
-    cookieStore.set('supabase-auth-token', sessionData.session.access_token, cookieOptions)
   }
 
-  revalidatePath('/', 'layout')
-  redirect('/latest')
+  return { data }
 }
 
 export async function signup(formData: FormData) {
