@@ -18,7 +18,6 @@ const HomePage = () => {
       <Problem backgroundColor="bg-[#14103F]" />
       <div className="bg-gradient-to-r from-[#1a1a60] to-[#2a2a80]">
         <Solution />
-        <Versus />
         <WhyThis />
         <AboutUsOne />
         <WhyNow />
