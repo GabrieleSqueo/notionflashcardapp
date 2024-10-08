@@ -137,7 +137,6 @@ export default function InsightComponent({ embed_id }) {
 
   return (
     <div className={`flex flex-col items-center justify-between w-full h-screen p-4 transition-colors duration-300 ${isDarkMode ? 'bg-[#191919] text-white' : 'bg-white text-gray-900'}`}>
-      <h1 className="text-2xl font-bold mb-4">Flashcard Insights</h1>
       <div className="w-full max-w-4xl flex-grow flex flex-col justify-center items-center">
         <div className="w-full h-[60vh]">
           {activeChart === 'pie' ? (

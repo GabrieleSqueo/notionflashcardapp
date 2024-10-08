@@ -161,7 +161,7 @@ export async function POST(request) {
                             object: 'block',
                             type: 'heading_2',
                             heading_2: {
-                                rich_text: [{ type: 'text', text: { content: 'Your Progress Insights' } }]
+                                rich_text: [{ type: 'text', text: { content: 'Your progress insights:' } }]
                             }
                         },
                         {
