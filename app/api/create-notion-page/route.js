@@ -161,6 +161,20 @@ export async function POST(request) {
                             object: 'block',
                             type: 'heading_2',
                             heading_2: {
+                                rich_text: [{ type: 'text', text: { content: 'Your Progress Insights' } }]
+                            }
+                        },
+                        {
+                            object: 'block',
+                            type: 'embed',
+                            embed: {
+                                url: `https://notionflashcard.com/embed/${set_id}?insight=true`,
+                            },
+                        },
+                        {
+                            object: 'block',
+                            type: 'heading_2',
+                            heading_2: {
                                 rich_text: [{ type: 'text', text: { content: 'Time to test yourself!' } }]
                             }
                         },
