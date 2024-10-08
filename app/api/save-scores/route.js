@@ -48,31 +48,24 @@ export async function POST(req) {
 
     const parentPageId = searchData.results[0].id;
 
-    // Search for the "datas_" subpage
-    const datasSearchResponse = await fetch(`https://api.notion.com/v1/search`, {
-      method: 'POST',
+    // Fetch the content of the parent page to find the "datas_" subpage
+    const parentPageContentResponse = await fetch(`https://api.notion.com/v1/blocks/${parentPageId}/children?page_size=100`, {
       headers: {
         'Authorization': `Bearer ${notionApiKey}`,
         'Notion-Version': '2022-06-28',
-        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        query: 'datas_',
-        filter: {
-          property: 'object',
-          value: 'page'
-        },
-        parent: {
-          type: 'page_id',
-          page_id: parentPageId
-        }
-      })
     });
 
-    const datasSearchData = await datasSearchResponse.json();
+    const parentPageContent = await parentPageContentResponse.json();
+
+    // Find the "datas_" subpage
+    let datasPage = parentPageContent.results.find(block => 
+      block.type === 'child_page' && block.child_page.title.toLowerCase() === 'datas_'
+    );
+
     let datasPageId;
 
-    if (!datasSearchData.results || datasSearchData.results.length === 0) {
+    if (!datasPage) {
       // Create "datas_" page if it doesn't exist
       const createPageResponse = await fetch('https://api.notion.com/v1/pages', {
         method: 'POST',
@@ -102,7 +95,7 @@ export async function POST(req) {
       const createPageData = await createPageResponse.json();
       datasPageId = createPageData.id;
     } else {
-      datasPageId = datasSearchData.results[0].id;
+      datasPageId = datasPage.id;
     }
 
     // Add the new score data to the datas_ page
