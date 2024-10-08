@@ -1,5 +1,26 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '../../utils/supabase/server';
+import crypto from 'crypto';
+
+// Get encryption key from environment variable
+const ENCRYPTION_KEY = process.env.ENC_KEY;
+
+// Function to encrypt data
+function encryptData(data) {
+  if (!ENCRYPTION_KEY) {
+    console.error('Encryption key is not set. Please set the ENC_KEY environment variable.');
+    throw new Error('Encryption key is not set');
+  }
+
+  // Convert the hexadecimal string to a Buffer and use only the first 32 bytes
+  const key = Buffer.from(ENCRYPTION_KEY, 'hex').slice(0, 32);
+
+  const iv = crypto.randomBytes(16);
+  const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
+  let encrypted = cipher.update(JSON.stringify(data));
+  encrypted = Buffer.concat([encrypted, cipher.final()]);
+  return iv.toString('hex') + ':' + encrypted.toString('hex');
+}
 
 export async function POST(req) {
   const { flashcardSetId, scores } = await req.json();
@@ -17,6 +38,9 @@ export async function POST(req) {
 
     const userId = setData.user_id;
     const setLink = setData.set_link;
+
+    // Encrypt the scores data
+    const encryptedScores = encryptData(scores);
 
     // Fetch notion_key from user_data table
     const { data: userData, error: userError } = await supabase
@@ -117,7 +141,7 @@ export async function POST(req) {
                 {
                   type: 'text',
                   text: {
-                    content: `Date: ${now}\nScores: ${JSON.stringify(scores)}`
+                    content: `Date: ${now}\nScores: ${encryptedScores}`
                   }
                 }
               ]
