@@ -3,7 +3,6 @@ import { createClient } from '../../utils/supabase/server';
 
 export async function POST(req) {
   const { flashcardSetId, scores } = await req.json();
-
   const supabase = createClient();
 
   try {
@@ -45,12 +44,11 @@ export async function POST(req) {
     });
 
     const searchData = await searchResponse.json();
-    console.log('Search data:', searchData);
     if (!searchData.results || searchData.results.length === 0) throw new Error('Notion page not found');
 
     const parentPageId = searchData.results[0].id;
 
-    // Search for the "datas_" subpage directly under the main set_link page
+    // Search for the "datas_" subpage
     const datasSearchResponse = await fetch(`https://api.notion.com/v1/search`, {
       method: 'POST',
       headers: {
@@ -72,12 +70,40 @@ export async function POST(req) {
     });
 
     const datasSearchData = await datasSearchResponse.json();
-    console.log('Datas search data:', datasSearchData);
-    if (!datasSearchData.results || datasSearchData.results.length === 0) {
-      throw new Error('Datas_ page not found');
-    }
+    let datasPageId;
 
-    const datasPageId = datasSearchData.results[0].id;
+    if (!datasSearchData.results || datasSearchData.results.length === 0) {
+      // Create "datas_" page if it doesn't exist
+      const createPageResponse = await fetch('https://api.notion.com/v1/pages', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${notionApiKey}`,
+          'Notion-Version': '2022-06-28',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          parent: { page_id: parentPageId },
+          properties: {
+            title: [
+              {
+                text: {
+                  content: 'datas_'
+                }
+              }
+            ]
+          }
+        })
+      });
+
+      if (!createPageResponse.ok) {
+        throw new Error('Failed to create datas_ page');
+      }
+
+      const createPageData = await createPageResponse.json();
+      datasPageId = createPageData.id;
+    } else {
+      datasPageId = datasSearchData.results[0].id;
+    }
 
     // Add the new score data to the datas_ page
     const now = new Date().toISOString();
