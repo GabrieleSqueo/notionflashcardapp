@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { MdContentCopy, MdCheck, MdDelete, MdPlayArrow, MdRefresh, MdInfo } from 'react-icons/md';
+import { MdContentCopy, MdCheck, MdDelete, MdPlayArrow, MdRefresh, MdInfo, MdLightMode, MdDarkMode } from 'react-icons/md';
 
 // ActionButton component
 const ActionButton = ({ icon: Icon, text, onClick, bgColor }) => (
@@ -75,14 +75,27 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm }) => {
     );
 };
 
+// New Switch component
+const Switch = ({ isOn, onToggle }) => (
+    <div 
+        onClick={onToggle}
+        className={`relative inline-flex items-center h-6 rounded-full w-11 transition-colors duration-200 ease-in-out cursor-pointer ${isOn ? 'bg-indigo-600' : 'bg-gray-200'}`}
+    >
+        <span className={`inline-block w-4 h-4 transform transition-transform duration-200 ease-in-out bg-white rounded-full ${isOn ? 'translate-x-6' : 'translate-x-1'}`} />
+    </div>
+);
+
 export default function FlashcardSetDetails() {
     const { project } = useParams();
     const [flashcardSet, setFlashcardSet] = useState(null);
     const [flashcards, setFlashcards] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [copied, setCopied] = useState(false);
+    const [copiedEmbed, setCopiedEmbed] = useState(false);
+    const [copiedInsights, setCopiedInsights] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [embedDarkMode, setEmbedDarkMode] = useState(false);
+    const [insightsDarkMode, setInsightsDarkMode] = useState(false);
 
     useEffect(() => {
         async function fetchData() {
@@ -115,10 +128,18 @@ export default function FlashcardSetDetails() {
     }, [project]);
 
     const copyEmbedLink = () => {
-        const embedLink = `${window.location.origin}/embed/${project}`;
+        const embedLink = `${window.location.origin}/embed/${project}?mode=${embedDarkMode ? 'dark' : 'light'}`;
         navigator.clipboard.writeText(embedLink).then(() => {
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
+            setCopiedEmbed(true);
+            setTimeout(() => setCopiedEmbed(false), 2000);
+        });
+    };
+
+    const copyInsightsLink = () => {
+        const insightsLink = `${window.location.origin}/embed/${project}/insights?mode=${insightsDarkMode ? 'dark' : 'light'}`;
+        navigator.clipboard.writeText(insightsLink).then(() => {
+            setCopiedInsights(true);
+            setTimeout(() => setCopiedInsights(false), 2000);
         });
     };
 
@@ -162,7 +183,7 @@ export default function FlashcardSetDetails() {
                                         <ActionButton 
                                             icon={MdPlayArrow} 
                                             text="Start Learning" 
-                                            onClick={() => window.location.href = flashcardSet.set_link} // Navigate to the flashcard set link
+                                            onClick={() => window.location.href = flashcardSet.set_link}
                                             bgColor="bg-green-500"
                                         />
                                         <ActionButton 
@@ -173,14 +194,14 @@ export default function FlashcardSetDetails() {
                                         />
                                     </div>
 
-                                    <div className="bg-gray-100 p-6 rounded-xl shadow-inner">
+                                    <div className="bg-gray-100 p-6 rounded-xl shadow-inner mb-6">
                                         <h3 className="text-xl font-semibold mb-3 text-indigo-600">Embed This Flashcard Set</h3>
                                         <p className="text-gray-600 mb-4">Copy the link below to embed this flashcard set on your Notion page:</p>
-                                        <div className="flex items-center">
+                                        <div className="flex items-center mb-4">
                                             <div className="relative flex-grow">
                                                 <input 
                                                     type="text" 
-                                                    value={`https://www.notionflashcards.com/embed/${project}`}
+                                                    value={`https://www.notionflashcards.com/embed/${project}?mode=${embedDarkMode ? 'dark' : 'light'}`}
                                                     readOnly
                                                     className="w-full p-3 pr-24 border-2 text-black border-indigo-200 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors duration-200"
                                                 />
@@ -188,7 +209,7 @@ export default function FlashcardSetDetails() {
                                                     onClick={copyEmbedLink}
                                                     className="absolute right-0 top-0 bottom-0 px-4 bg-indigo-500 text-white rounded-r-xl hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors duration-200 flex items-center justify-center"
                                                 >
-                                                    {copied ? (
+                                                    {copiedEmbed ? (
                                                         <>
                                                             <MdCheck className="h-5 w-5 mr-2" />
                                                             <span>Copied!</span>
@@ -202,12 +223,51 @@ export default function FlashcardSetDetails() {
                                                 </button>
                                             </div>
                                         </div>
-                                        {copied && (
-                                            <p className="text-green-600 mt-2 flex items-center">
-                                                <MdCheck className="h-5 w-5 mr-2" />
-                                                Copied to clipboard!
-                                            </p>
-                                        )}
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center">
+                                                <span className="mr-2 text-sm font-medium text-gray-700">Light</span>
+                                                <Switch isOn={embedDarkMode} onToggle={() => setEmbedDarkMode(!embedDarkMode)} />
+                                                <span className="ml-2 text-sm font-medium text-gray-700">Dark</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-gray-100 p-6 rounded-xl shadow-inner">
+                                        <h3 className="text-xl font-semibold mb-3 text-indigo-600">Embed Insights</h3>
+                                        <p className="text-gray-600 mb-4">Copy the link below to embed insights for this flashcard set:</p>
+                                        <div className="flex items-center mb-4">
+                                            <div className="relative flex-grow">
+                                                <input 
+                                                    type="text" 
+                                                    value={`https://www.notionflashcards.com/embed/${project}/insights?mode=${insightsDarkMode ? 'dark' : 'light'}`}
+                                                    readOnly
+                                                    className="w-full p-3 pr-24 border-2 text-black border-indigo-200 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors duration-200"
+                                                />
+                                                <button 
+                                                    onClick={copyInsightsLink}
+                                                    className="absolute right-0 top-0 bottom-0 px-4 bg-indigo-500 text-white rounded-r-xl hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors duration-200 flex items-center justify-center"
+                                                >
+                                                    {copiedInsights ? (
+                                                        <>
+                                                            <MdCheck className="h-5 w-5 mr-2" />
+                                                            <span>Copied!</span>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <MdContentCopy className="h-5 w-5 mr-2" />
+                                                            <span>Copy</span>
+                                                        </>
+                                                    )}
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center">
+                                                <span className="mr-2 text-sm font-medium text-gray-700">Light</span>
+                                                <Switch isOn={insightsDarkMode} onToggle={() => setInsightsDarkMode(!insightsDarkMode)} />
+                                                <span className="ml-2 text-sm font-medium text-gray-700">Dark</span>
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <div className="flex items-center mt-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-700 rounded-md">
