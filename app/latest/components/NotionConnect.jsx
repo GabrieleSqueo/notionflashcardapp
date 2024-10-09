@@ -36,14 +36,14 @@ const NotionConnect = ({ isConnected }) => {
     button.classList.add('active');
     
     const removeActiveClass = () => {
-      button.classList.remove('active');
+        button.classList.remove('active');
     };
 
     requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        removeActiveClass();
-        action();
-      });
+        requestAnimationFrame(() => {
+            removeActiveClass();
+            action(e);
+        });
     });
 
     setTimeout(removeActiveClass, 150);
