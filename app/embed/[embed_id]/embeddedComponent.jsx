@@ -281,31 +281,31 @@ export default function EmbeddedComponent({ embed_id }) {
         )}
       </div>
 
-      <div className="w-full max-w-3xl mt-8 flex justify-between">
+      <div className="w-full max-w-3xl mt-8 flex flex-col sm:flex-row justify-between space-y-2 sm:space-y-0 sm:space-x-2">
         <button
           onClick={() => handleScoreClick(1)}
-          className="px-4 py-2 bg-red-500 text-white rounded-xl shadow-[0_3px_0_rgb(185,28,28)] text-sm font-bold transition-all duration-300 active:shadow-[0_0_0_rgb(185,28,28)] active:translate-y-[3px] hover:bg-red-600 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
+          className="flex-1 px-3 py-2 bg-red-500 text-white rounded-xl shadow-[0_3px_0_rgb(185,28,28)] text-sm font-bold transition-all duration-300 active:shadow-[0_0_0_rgb(185,28,28)] active:translate-y-[3px] hover:bg-red-600 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
         >
           Don't know 😕
           <span className="absolute inset-0 rounded-xl bg-white opacity-25 animate-ripple"></span>
         </button>
         <button
           onClick={() => handleScoreClick(2)}
-          className="px-4 py-2 bg-orange-500 text-white rounded-xl shadow-[0_3px_0_rgb(194,65,12)] text-sm font-bold transition-all duration-300 active:shadow-[0_0_0_rgb(194,65,12)] active:translate-y-[3px] hover:bg-orange-600 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50"
+          className="flex-1 px-3 py-2 bg-orange-500 text-white rounded-xl shadow-[0_3px_0_rgb(194,65,12)] text-sm font-bold transition-all duration-300 active:shadow-[0_0_0_rgb(194,65,12)] active:translate-y-[3px] hover:bg-orange-600 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50"
         >
           Need to review 🤔
           <span className="absolute inset-0 rounded-xl bg-white opacity-25 animate-ripple"></span>
         </button>
         <button
           onClick={() => handleScoreClick(3)}
-          className="px-4 py-2 bg-yellow-500 text-white rounded-xl shadow-[0_3px_0_rgb(161,98,7)] text-sm font-bold transition-all duration-300 active:shadow-[0_0_0_rgb(161,98,7)] active:translate-y-[3px] hover:bg-yellow-600 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50"
+          className="flex-1 px-3 py-2 bg-yellow-500 text-white rounded-xl shadow-[0_3px_0_rgb(161,98,7)] text-sm font-bold transition-all duration-300 active:shadow-[0_0_0_rgb(161,98,7)] active:translate-y-[3px] hover:bg-yellow-600 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50"
         >
           Almost got it 🙂
           <span className="absolute inset-0 rounded-xl bg-white opacity-25 animate-ripple"></span>
         </button>
         <button
           onClick={() => handleScoreClick(4)}
-          className="px-4 py-2 bg-green-500 text-white rounded-xl shadow-[0_3px_0_rgb(21,128,61)] text-sm font-bold transition-all duration-300 active:shadow-[0_0_0_rgb(21,128,61)] active:translate-y-[3px] hover:bg-green-600 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+          className="flex-1 px-3 py-2 bg-green-500 text-white rounded-xl shadow-[0_3px_0_rgb(21,128,61)] text-sm font-bold transition-all duration-300 active:shadow-[0_0_0_rgb(21,128,61)] active:translate-y-[3px] hover:bg-green-600 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
         >
           Know it! 😄
           <span className="absolute inset-0 rounded-xl bg-white opacity-25 animate-ripple"></span>
