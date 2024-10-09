@@ -190,10 +190,23 @@ export default function EmbeddedComponent({ embed_id }) {
   const currentCard = flashcards[currentCardIndex]
 
   return (
-    <div className={`flex flex-col items-center justify-between w-full h-screen p-4 transition-colors duration-300 ${isDarkMode ? 'bg-[#191919] text-white' : 'bg-white'}`}>
-      <div className="w-full max-w-4xl flex-grow flex flex-col justify-center items-center perspective">
+    <div className={`relative flex flex-col items-center justify-between w-full h-screen p-4 transition-colors duration-300 ${isDarkMode ? 'bg-[#191919] text-white' : 'bg-white'}`}>
+      {/* Dark/Light mode toggle button */}
+      <button 
+        onClick={toggleDarkMode} 
+        className="absolute top-4 right-4 p-2 rounded-full bg-yellow-400 text-gray-900 shadow-[0_5px_0_rgb(202,138,4)] focus:outline-none transition-all duration-300 transform hover:scale-110 active:scale-95 z-20"
+      >
+        {isDarkMode ? <MdLightMode size={24} /> : <MdDarkMode size={24} />}
+      </button>
+
+      <div className="w-full max-w-3xl flex-grow flex flex-col justify-center items-center perspective">
+        {/* Card number */}
+        <p className={`mb-4 text-center text-sm md:text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+          Card {currentCardIndex + 1} of {flashcards.length}
+        </p>
+
         <div 
-          className={`relative w-full h-full max-h-[70vh] cursor-pointer transition-transform duration-500 transform-style-3d ${isFlipped ? 'rotate-y-180' : ''}`} 
+          className={`relative w-full max-w-2xl h-[60vh] cursor-pointer transition-transform duration-500 transform-style-3d ${isFlipped ? 'rotate-y-180' : ''}`} 
           onClick={toggleFlip}
         >
           <div className={`absolute w-full h-full backface-hidden rounded-xl p-6 flex items-center justify-center ${
@@ -216,7 +229,8 @@ export default function EmbeddedComponent({ embed_id }) {
           </div>
         </div>
       </div>
-      <div className="w-full max-w-4xl mt-8 flex justify-between">
+
+      <div className="w-full max-w-3xl mt-8 flex justify-between">
         <button
           onClick={() => handleScoreClick(1)}
           className="px-4 py-2 bg-red-500 text-white rounded-xl shadow-[0_3px_0_rgb(185,28,28)] text-sm font-bold transition-all duration-300 active:shadow-[0_0_0_rgb(185,28,28)] active:translate-y-[3px] hover:bg-red-600 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
@@ -246,15 +260,6 @@ export default function EmbeddedComponent({ embed_id }) {
           <span className="absolute inset-0 rounded-xl bg-white opacity-25 animate-ripple"></span>
         </button>
       </div>
-      <p className={`mt-4 text-center text-sm md:text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-        Card {currentCardIndex + 1} of {flashcards.length}
-      </p>
-      <button 
-        onClick={toggleDarkMode} 
-        className="mt-4 p-2 rounded-full bg-yellow-400 text-gray-900 shadow-[0_5px_0_rgb(202,138,4)] focus:outline-none"
-      >
-        {isDarkMode ? <MdLightMode size={24} /> : <MdDarkMode size={24} />}
-      </button>
     </div>
   )
 }
