@@ -169,18 +169,12 @@ export default function InsightComponent({ embed_id }) {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        display: windowWidth > 640,
-        position: 'bottom',
-        labels: {
-          boxWidth: windowWidth > 640 ? 10 : 8,
-          padding: windowWidth > 640 ? 10 : 5,
-          font: { size: windowWidth > 640 ? 12 : 10 }
-        }
+        display: false, // This line removes the legend
       },
       title: {
         display: true,
         text: activeSection === 'today' ? "Today's Performance" : 'Performance Over Time',
-        font: { size: windowWidth > 640 ? 16 : 14, weight: 'bold' }
+        font: { size: windowWidth > 768 ? 16 : 14, weight: 'bold' }
       }
     },
     scales: activeSection === 'performance' ? {
@@ -188,14 +182,14 @@ export default function InsightComponent({ embed_id }) {
         beginAtZero: true,
         max: 4,
         ticks: {
-          font: { size: windowWidth > 640 ? 10 : 8 }
+          font: { size: windowWidth > 768 ? 10 : 8 }
         }
       },
       x: {
         ticks: {
           maxRotation: 45,
           minRotation: 45,
-          font: { size: windowWidth > 640 ? 10 : 8 }
+          font: { size: windowWidth > 768 ? 10 : 8 }
         }
       }
     } : {}
@@ -204,7 +198,7 @@ export default function InsightComponent({ embed_id }) {
   const renderChart = (chartType, data, title) => {
     const ChartComponent = chartType === 'pie' ? Pie : Line;
     return (
-      <div className={`w-full ${windowWidth > 768 ? 'h-[40vh]' : 'h-[30vh]'}`}>
+      <div className={`w-full ${windowWidth > 768 ? 'h-[50vh]' : 'h-[45vh]'}`}>
         <h3 className="text-center mb-2 text-lg font-bold">{title}</h3>
         <ChartComponent ref={chartRef} data={data} options={chartOptions} />
       </div>
@@ -249,74 +243,55 @@ export default function InsightComponent({ embed_id }) {
           )}
         </div>
 
-        {windowWidth > 768 ? (
-          activeSection === 'today' ? (
-            <div className="w-full flex flex-col md:flex-row justify-between space-y-4 md:space-y-0 md:space-x-4">
-              <div className="w-full md:w-1/2">
-                {renderChart('pie', overallData, 'Overall Performance')}
+        <div className={`w-full ${windowWidth <= 768 ? 'px-2' : ''}`}>
+          {windowWidth > 768 ? (
+            activeSection === 'today' ? (
+              <div className="w-full flex flex-col md:flex-row justify-between space-y-4 md:space-y-0 md:space-x-4">
+                <div className="w-full md:w-1/2">
+                  {renderChart('pie', overallData, 'Overall Performance')}
+                </div>
+                <div className="w-full md:w-1/2">
+                  {todayPerformance ? (
+                    renderChart('pie', todayPerformance, "Today's Performance")
+                  ) : (
+                    <div className="flex items-center justify-center h-full">
+                      <p className="text-center">No data available for today</p>
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className="w-full md:w-1/2">
-                {todayPerformance ? (
-                  renderChart('pie', todayPerformance, "Today's Performance")
-                ) : (
-                  <div className="flex items-center justify-center h-full">
-                    <p className="text-center">No data available for today</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          ) : (
-            <div className="w-full">
-              {renderChart('line', lineData, 'Performance Over Time')}
-            </div>
-          )
-        ) : (
-          <>
-            {activeSection === 'overall' && (
-              <div className="w-full">
-                {renderChart('pie', overallData, 'Overall Performance')}
-              </div>
-            )}
-            {activeSection === 'today' && (
-              <div className="w-full">
-                {todayPerformance ? (
-                  renderChart('pie', todayPerformance, "Today's Performance")
-                ) : (
-                  <div className="flex items-center justify-center h-full">
-                    <p className="text-center">No data available for today</p>
-                  </div>
-                )}
-              </div>
-            )}
-            {activeSection === 'performance' && (
+            ) : (
               <div className="w-full">
                 {renderChart('line', lineData, 'Performance Over Time')}
               </div>
-            )}
-          </>
-        )}
-      </div>
-
-      {windowWidth <= 640 && (
-        <div className="w-full max-w-4xl mt-4 flex flex-wrap justify-center">
-          {(activeSection === 'overall' || activeSection === 'today' ? overallData : lineData).labels.map((label, index) => {
-            const chartData = activeSection === 'overall' || activeSection === 'today' ? overallData : lineData;
-            const color = activeSection === 'performance' 
-              ? chartData.datasets[0].borderColor 
-              : chartData.datasets[0].backgroundColor[index];
-            
-            return (
-              <div key={label} className="flex items-center mr-4 mb-2">
-                <div 
-                  className="w-3 h-3 mr-1" 
-                  style={{ backgroundColor: color }}
-                ></div>
-                <span className="text-xs">{label}</span>
-              </div>
-            );
-          })}
+            )
+          ) : (
+            <>
+              {activeSection === 'overall' && (
+                <div className="w-full">
+                  {renderChart('pie', overallData, 'Overall Performance')}
+                </div>
+              )}
+              {activeSection === 'today' && (
+                <div className="w-full">
+                  {todayPerformance ? (
+                    renderChart('pie', todayPerformance, "Today's Performance")
+                  ) : (
+                    <div className="flex items-center justify-center h-full">
+                      <p className="text-center">No data available for today</p>
+                    </div>
+                  )}
+                </div>
+              )}
+              {activeSection === 'performance' && (
+                <div className="w-full">
+                  {renderChart('line', lineData, 'Performance Over Time')}
+                </div>
+              )}
+            </>
+          )}
         </div>
-      )}
+      </div>
     </div>
   )
 }
