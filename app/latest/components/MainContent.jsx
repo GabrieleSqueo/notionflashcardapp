@@ -76,12 +76,6 @@ const MainContent = ({ isNotionConnected }) => {
                         description="View all projects"
                     />
                     <ButtonLink 
-                        href="/latest/settings" 
-                        icon={MdSettings}
-                        title="Settings"
-                        description="Manage your account"
-                    />
-                    <ButtonLink 
                         href="/latest/new-project" 
                         icon={MdAddCircle}
                         title="New Project"

@@ -13,9 +13,6 @@ export default async function HomePage() {
         redirect('/latest/login')
     }
 
-    // Log the user data to see the parameters
-    console.log("User Data:", data.user)
-
     // Check if the user has a Notion key
     const { data: userData, error: userError } = await supabase
         .from('user_data')
