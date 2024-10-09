@@ -18,6 +18,7 @@ export default function EmbeddedComponent({ embed_id }) {
   const [showResults, setShowResults] = useState(false)
   const searchParams = useSearchParams()
   const pathname = usePathname()
+  const [revealedWords, setRevealedWords] = useState([])
 
   useEffect(() => {
     const fetchContent = async () => {
@@ -42,14 +43,25 @@ export default function EmbeddedComponent({ embed_id }) {
     }
   }, [embed_id, searchParams])
 
+  const handleWordClick = (index) => {
+    if (!revealedWords.includes(index)) {
+      setRevealedWords([...revealedWords, index])
+    }
+  }
+
+  const resetCard = () => {
+    setRevealedWords([])
+    setIsFlipped(false)
+  }
+
   const nextCard = (score) => {
     setScores(prevScores => [...prevScores, score])
+    resetCard()
 
     if (currentCardIndex === flashcards.length - 1) {
       setShowResults(true)
     } else {
       setCurrentCardIndex(prevIndex => prevIndex + 1)
-      setIsFlipped(false)
     }
   }
 
@@ -220,29 +232,53 @@ export default function EmbeddedComponent({ embed_id }) {
           Card {currentCardIndex + 1} of {flashcards.length}
         </p>
 
-        <div 
-          className={`relative w-full max-w-2xl h-[60vh] cursor-pointer transition-transform duration-500 transform-style-3d ${isFlipped ? 'rotate-y-180' : ''}`} 
-          onClick={toggleFlip}
-        >
-          <div className={`absolute w-full h-full backface-hidden rounded-xl p-6 flex items-center justify-center ${
+        {currentCard.type === 'flashcard' ? (
+          <div 
+            className={`relative w-full max-w-2xl h-[60vh] cursor-pointer transition-transform duration-500 transform-style-3d ${isFlipped ? 'rotate-y-180' : ''}`} 
+            onClick={toggleFlip}
+          >
+            <div className={`absolute w-full h-full backface-hidden rounded-xl p-6 flex items-center justify-center ${
+              isDarkMode 
+                ? 'bg-gray-800 shadow-[0_5px_0_rgb(59,130,246)]' 
+                : 'bg-gray-100 shadow-[0_5px_0_rgb(34,197,94)]'
+            }`}>
+              <p className={`text-2xl md:text-4xl lg:text-5xl font-semibold text-center ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+                {currentCard.front}
+              </p>
+            </div>
+            <div className={`absolute w-full h-full backface-hidden rounded-xl p-6 flex items-center justify-center rotate-y-180 ${
+              isDarkMode 
+                ? 'bg-gray-800 shadow-[0_5px_0_rgb(59,130,246)]' 
+                : 'bg-gray-100 shadow-[0_5px_0_rgb(34,197,94)]'
+            }`}>
+              <p className={`text-2xl md:text-4xl lg:text-5xl font-semibold text-center ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+                {currentCard.back}
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className={`w-full max-w-2xl h-[60vh] rounded-xl p-6 flex items-center justify-center ${
             isDarkMode 
               ? 'bg-gray-800 shadow-[0_5px_0_rgb(59,130,246)]' 
               : 'bg-gray-100 shadow-[0_5px_0_rgb(34,197,94)]'
           }`}>
             <p className={`text-2xl md:text-4xl lg:text-5xl font-semibold text-center ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-              {currentCard.front}
+              {currentCard.content.split('___').map((part, index) => (
+                <span key={index}>
+                  {part}
+                  {index < currentCard.hiddenWords.length && (
+                    <span 
+                      onClick={() => handleWordClick(index)}
+                      className={`cursor-pointer ${revealedWords.includes(index) ? '' : 'bg-gray-500 text-transparent'} rounded px-1`}
+                    >
+                      {currentCard.hiddenWords[index].word}
+                    </span>
+                  )}
+                </span>
+              ))}
             </p>
           </div>
-          <div className={`absolute w-full h-full backface-hidden rounded-xl p-6 flex items-center justify-center rotate-y-180 ${
-            isDarkMode 
-              ? 'bg-gray-800 shadow-[0_5px_0_rgb(59,130,246)]' 
-              : 'bg-gray-100 shadow-[0_5px_0_rgb(34,197,94)]'
-          }`}>
-            <p className={`text-2xl md:text-4xl lg:text-5xl font-semibold text-center ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-              {currentCard.back}
-            </p>
-          </div>
-        </div>
+        )}
       </div>
 
       <div className="w-full max-w-3xl mt-8 flex justify-between">

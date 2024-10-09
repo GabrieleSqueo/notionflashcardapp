@@ -64,13 +64,28 @@ export async function GET(request) {
                     text.includes("Question == Answer")) {
                     return false;
                 }
-                const parts = text.split('==').map(part => part.trim());
-                return parts.length === 2 && parts[0] !== '' && parts[1] !== '';
+                return true; // Keep all other paragraphs
             })
             .map(text => {
-                const [front, back] = text.split('==').map(part => part.trim());
-                return { front, back };
-            });
+                const parts = text.split('==').map(part => part.trim());
+                if (parts.length === 2 && parts[0] !== '' && parts[1] !== '') {
+                    return { type: 'flashcard', front: parts[0], back: parts[1] };
+                } else {
+                    const hiddenWordRegex = /\[([^\]]+)\]/g;
+                    const matches = [...text.matchAll(hiddenWordRegex)];
+                    if (matches.length > 0) {
+                        return {
+                            type: 'hiddenWord',
+                            content: text.replace(hiddenWordRegex, '___'),
+                            hiddenWords: matches.map(match => ({ word: match[1], index: match.index }))
+                        };
+                    } else {
+                        return null; // Ignore text that doesn't match any format
+                    }
+                }
+            })
+            .filter(card => card !== null);
+
         return NextResponse.json({ content: flashcards });
     } catch (error) {
         console.error('Error:', error);
