@@ -57,7 +57,25 @@ export default function InsightComponent({ embed_id }) {
 
   if (loading) return (
     <div className={`flex items-center justify-center w-full h-screen ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'}`}>
-      <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+      <div className="flex flex-col items-center">
+        <div className="loader"></div>
+        <p className="mt-4 text-lg">Loading, please wait...</p>
+      </div>
+      <style jsx>{`
+        .loader {
+          border: 16px solid ${isDarkMode ? '#444' : '#f3f3f3'};
+          border-top: 16px solid ${isDarkMode ? '#3498db' : '#3498db'};
+          border-radius: 50%;
+          width: 80px;
+          height: 80px;
+          animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   )
 
