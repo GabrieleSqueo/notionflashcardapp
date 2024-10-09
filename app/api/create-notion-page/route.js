@@ -222,6 +222,20 @@ export async function POST(request) {
                         },
                         {
                             object: 'block',
+                            type: 'paragraph',
+                            paragraph: {
+                                rich_text: [
+                                    {
+                                        type: 'text',
+                                        text: {
+                                            content: 'When you write a phrase like "Einstein is a [scientist]", the flashcards will hide the word in the brackets.',
+                                        },
+                                    },
+                                ],
+                            },
+                        },
+                        {
+                            object: 'block',
                             type: 'quote',
                             quote: {
                                 rich_text: [
