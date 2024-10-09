@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, Title } from 'chart.js'
 import { Pie, Line } from 'react-chartjs-2'
 import { MdLightMode, MdDarkMode } from 'react-icons/md'
@@ -13,9 +13,17 @@ export default function InsightComponent({ embed_id }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [isDarkMode, setIsDarkMode] = useState(false)
-  const [activeChart, setActiveChart] = useState('overall')
+  const [activeSection, setActiveSection] = useState('overall')
   const searchParams = useSearchParams()
   const pathname = usePathname()
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 0);
+  const chartRef = useRef(null);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     async function fetchData() {
@@ -44,6 +52,13 @@ export default function InsightComponent({ embed_id }) {
       setIsDarkMode(true)
     }
   }, [embed_id, searchParams]);
+
+  useEffect(() => {
+    if (chartRef.current) {
+      chartRef.current.options.plugins.legend.display = windowWidth > 640;
+      chartRef.current.update();
+    }
+  }, [windowWidth, activeSection, isDarkMode]);
 
   const toggleDarkMode = () => {
     const newMode = !isDarkMode
@@ -154,90 +169,154 @@ export default function InsightComponent({ embed_id }) {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        display: true,
+        display: windowWidth > 640,
         position: 'bottom',
         labels: {
-          color: isDarkMode ? 'white' : 'black'
+          boxWidth: windowWidth > 640 ? 10 : 8,
+          padding: windowWidth > 640 ? 10 : 5,
+          font: { size: windowWidth > 640 ? 12 : 10 }
         }
       },
       title: {
         display: true,
-        text: activeChart === 'overall' ? 'Overall Performance' : 'Performance Over Time',
-        color: isDarkMode ? 'white' : 'black'
+        text: activeSection === 'today' ? "Today's Performance" : 'Performance Over Time',
+        font: { size: windowWidth > 640 ? 16 : 14, weight: 'bold' }
       }
     },
-    scales: activeChart === 'line' ? {
+    scales: activeSection === 'performance' ? {
       y: {
         beginAtZero: true,
         max: 4,
         ticks: {
-          color: isDarkMode ? 'white' : 'black'
+          font: { size: windowWidth > 640 ? 10 : 8 }
         }
       },
       x: {
         ticks: {
-          color: isDarkMode ? 'white' : 'black'
+          maxRotation: 45,
+          minRotation: 45,
+          font: { size: windowWidth > 640 ? 10 : 8 }
         }
       }
     } : {}
   };
 
+  const renderChart = (chartType, data, title) => {
+    const ChartComponent = chartType === 'pie' ? Pie : Line;
+    return (
+      <div className={`w-full ${windowWidth > 768 ? 'h-[40vh]' : 'h-[30vh]'}`}>
+        <h3 className="text-center mb-2 text-lg font-bold">{title}</h3>
+        <ChartComponent ref={chartRef} data={data} options={chartOptions} />
+      </div>
+    );
+  };
+
+  const SectionButton = ({ section, text }) => (
+    <button
+      onClick={() => setActiveSection(section)}
+      className={`px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 ${
+        activeSection === section
+          ? 'bg-blue-500 text-white shadow-[0_3px_0_rgb(37,99,235)]'
+          : 'bg-gray-200 text-gray-700 shadow-[0_3px_0_rgb(156,163,175)]'
+      }`}
+    >
+      {text}
+    </button>
+  );
+
   return (
-    <div className={`relative flex flex-col items-center justify-between w-full h-screen p-4 transition-colors duration-300 ${isDarkMode ? 'bg-[#191919] text-white' : 'bg-white text-gray-900'}`}>
-      {/* Dark/Light mode toggle button */}
+    <div className={`relative flex flex-col items-center justify-between w-full min-h-screen p-4 transition-colors duration-300 ${isDarkMode ? 'bg-[#191919] text-white' : 'bg-white text-gray-900'}`}>
       <button 
         onClick={toggleDarkMode} 
-        className="absolute top-4 right-4 p-2 rounded-full bg-yellow-400 text-gray-900 shadow-[0_5px_0_rgb(202,138,4)] focus:outline-none transition-all duration-300 transform hover:scale-110 active:scale-95 z-20"
+        className="absolute top-2 right-2 p-2 rounded-full bg-yellow-400 text-gray-900 shadow-[0_5px_0_rgb(202,138,4)] focus:outline-none transition-all duration-300 transform hover:scale-110 active:scale-95 z-20"
       >
-        {isDarkMode ? <MdLightMode size={24} /> : <MdDarkMode size={24} />}
+        {isDarkMode ? <MdLightMode size={20} /> : <MdDarkMode size={20} />}
       </button>
 
-      <div className="w-full max-w-4xl flex-grow flex flex-col justify-center items-center">
-        {activeChart === 'overall' ? (
-          <div className="w-full flex justify-between">
-            <div className="w-1/2 h-[60vh]">
-              <h3 className="text-center mb-2 text-xl font-bold">Overall Performance</h3>
-              <Pie data={overallData} options={chartOptions} />
+      <div className="w-full max-w-4xl flex-grow flex flex-col justify-center items-center mt-8">
+        <div className="w-full flex flex-wrap justify-center mb-4 space-x-2 space-y-2 sm:space-y-0">
+          {windowWidth > 768 ? (
+            <>
+              <SectionButton section="today" text="Today" />
+              <SectionButton section="performance" text="Performance" />
+            </>
+          ) : (
+            <>
+              <SectionButton section="overall" text="Overall Performance" />
+              <SectionButton section="today" text="Today's Performance" />
+              <SectionButton section="performance" text="Performance Over Time" />
+            </>
+          )}
+        </div>
+
+        {windowWidth > 768 ? (
+          activeSection === 'today' ? (
+            <div className="w-full flex flex-col md:flex-row justify-between space-y-4 md:space-y-0 md:space-x-4">
+              <div className="w-full md:w-1/2">
+                {renderChart('pie', overallData, 'Overall Performance')}
+              </div>
+              <div className="w-full md:w-1/2">
+                {todayPerformance ? (
+                  renderChart('pie', todayPerformance, "Today's Performance")
+                ) : (
+                  <div className="flex items-center justify-center h-full">
+                    <p className="text-center">No data available for today</p>
+                  </div>
+                )}
+              </div>
             </div>
-            <div className="w-1/2 h-[60vh]">
-              <h3 className="text-center mb-2 text-xl font-bold">Today's Performance</h3>
-              {todayPerformance ? (
-                <Pie data={todayPerformance} options={chartOptions} />
-              ) : (
-                <div className="flex items-center justify-center h-full">
-                  <p>No data available for today</p>
-                </div>
-              )}
+          ) : (
+            <div className="w-full">
+              {renderChart('line', lineData, 'Performance Over Time')}
             </div>
-          </div>
+          )
         ) : (
-          <div className="w-full h-[60vh]">
-            <Line data={lineData} options={chartOptions} />
-          </div>
+          <>
+            {activeSection === 'overall' && (
+              <div className="w-full">
+                {renderChart('pie', overallData, 'Overall Performance')}
+              </div>
+            )}
+            {activeSection === 'today' && (
+              <div className="w-full">
+                {todayPerformance ? (
+                  renderChart('pie', todayPerformance, "Today's Performance")
+                ) : (
+                  <div className="flex items-center justify-center h-full">
+                    <p className="text-center">No data available for today</p>
+                  </div>
+                )}
+              </div>
+            )}
+            {activeSection === 'performance' && (
+              <div className="w-full">
+                {renderChart('line', lineData, 'Performance Over Time')}
+              </div>
+            )}
+          </>
         )}
       </div>
-      <div className="w-full max-w-4xl mt-4 flex justify-center space-x-4">
-        <button
-          onClick={() => setActiveChart('overall')}
-          className={`px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 ${
-            activeChart === 'overall'
-              ? 'bg-blue-500 text-white shadow-[0_3px_0_rgb(37,99,235)]'
-              : 'bg-gray-200 text-gray-700 shadow-[0_3px_0_rgb(156,163,175)]'
-          }`}
-        >
-          Overall Performance
-        </button>
-        <button
-          onClick={() => setActiveChart('line')}
-          className={`px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 ${
-            activeChart === 'line'
-              ? 'bg-blue-500 text-white shadow-[0_3px_0_rgb(37,99,235)]'
-              : 'bg-gray-200 text-gray-700 shadow-[0_3px_0_rgb(156,163,175)]'
-          }`}
-        >
-          Performance Over Time
-        </button>
-      </div>
+
+      {windowWidth <= 640 && (
+        <div className="w-full max-w-4xl mt-4 flex flex-wrap justify-center">
+          {(activeSection === 'overall' || activeSection === 'today' ? overallData : lineData).labels.map((label, index) => {
+            const chartData = activeSection === 'overall' || activeSection === 'today' ? overallData : lineData;
+            const color = activeSection === 'performance' 
+              ? chartData.datasets[0].borderColor 
+              : chartData.datasets[0].backgroundColor[index];
+            
+            return (
+              <div key={label} className="flex items-center mr-4 mb-2">
+                <div 
+                  className="w-3 h-3 mr-1" 
+                  style={{ backgroundColor: color }}
+                ></div>
+                <span className="text-xs">{label}</span>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   )
 }
