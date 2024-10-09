@@ -12,7 +12,7 @@ export default function InsightComponent({ embed_id }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [isDarkMode, setIsDarkMode] = useState(false)
-  const [activeChart, setActiveChart] = useState('pie')
+  const [activeChart, setActiveChart] = useState('overall')
 
   useEffect(() => {
     async function fetchData() {
@@ -79,8 +79,8 @@ export default function InsightComponent({ embed_id }) {
     percentageRight: session.scores.filter(score => score >= 3).length / session.scores.length * 100
   })).sort((a, b) => a.date - b.date);
 
-  // Pie chart data
-  const pieData = {
+  // Overall performance data
+  const overallData = {
     labels: ['Correct (3-4)', 'Incorrect (1-2)'],
     datasets: [{
       data: [
@@ -90,6 +90,20 @@ export default function InsightComponent({ embed_id }) {
       backgroundColor: ['#4CAF50', '#FF5252']
     }]
   };
+
+  // Today's performance data
+  const today = new Date().setHours(0, 0, 0, 0);
+  const todayData = processedData.find(session => session.date.setHours(0, 0, 0, 0) === today);
+  const todayPerformance = todayData ? {
+    labels: ['Correct (3-4)', 'Incorrect (1-2)'],
+    datasets: [{
+      data: [
+        todayData.scores.filter(score => score >= 3).length,
+        todayData.scores.filter(score => score < 3).length
+      ],
+      backgroundColor: ['#4CAF50', '#FF5252']
+    }]
+  } : null;
 
   // Line chart data
   const lineData = {
@@ -115,7 +129,7 @@ export default function InsightComponent({ embed_id }) {
       },
       title: {
         display: true,
-        text: activeChart === 'pie' ? 'Overall Performance' : 'Performance Over Time',
+        text: activeChart === 'overall' ? 'Overall Performance' : 'Performance Over Time',
         color: isDarkMode ? 'white' : 'black'
       }
     },
@@ -136,21 +150,44 @@ export default function InsightComponent({ embed_id }) {
   };
 
   return (
-    <div className={`flex flex-col items-center justify-between w-full h-screen p-4 transition-colors duration-300 ${isDarkMode ? 'bg-[#191919] text-white' : 'bg-white text-gray-900'}`}>
+    <div className={`relative flex flex-col items-center justify-between w-full h-screen p-4 transition-colors duration-300 ${isDarkMode ? 'bg-[#191919] text-white' : 'bg-white text-gray-900'}`}>
+      {/* Dark/Light mode toggle button */}
+      <button 
+        onClick={toggleDarkMode} 
+        className="absolute top-4 right-4 p-2 rounded-full bg-yellow-400 text-gray-900 shadow-[0_5px_0_rgb(202,138,4)] focus:outline-none transition-transform duration-300 transform hover:scale-105 active:scale-95"
+      >
+        {isDarkMode ? <MdLightMode size={24} /> : <MdDarkMode size={24} />}
+      </button>
+
       <div className="w-full max-w-4xl flex-grow flex flex-col justify-center items-center">
-        <div className="w-full h-[60vh]">
-          {activeChart === 'pie' ? (
-            <Pie data={pieData} options={chartOptions} />
-          ) : (
+        {activeChart === 'overall' ? (
+          <div className="w-full flex justify-between">
+            <div className="w-1/2 h-[60vh]">
+              <h3 className="text-center mb-2">Overall Performance</h3>
+              <Pie data={overallData} options={chartOptions} />
+            </div>
+            <div className="w-1/2 h-[60vh]">
+              <h3 className="text-center mb-2">Today's Performance</h3>
+              {todayPerformance ? (
+                <Pie data={todayPerformance} options={chartOptions} />
+              ) : (
+                <div className="flex items-center justify-center h-full">
+                  <p>No data available for today</p>
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="w-full h-[60vh]">
             <Line data={lineData} options={chartOptions} />
-          )}
-        </div>
+          </div>
+        )}
       </div>
       <div className="w-full max-w-4xl mt-4 flex justify-center space-x-4">
         <button
-          onClick={() => setActiveChart('pie')}
+          onClick={() => setActiveChart('overall')}
           className={`px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 ${
-            activeChart === 'pie'
+            activeChart === 'overall'
               ? 'bg-blue-500 text-white shadow-[0_3px_0_rgb(37,99,235)]'
               : 'bg-gray-200 text-gray-700 shadow-[0_3px_0_rgb(156,163,175)]'
           }`}
@@ -168,12 +205,6 @@ export default function InsightComponent({ embed_id }) {
           Performance Over Time
         </button>
       </div>
-      <button 
-        onClick={toggleDarkMode} 
-        className="mt-4 p-2 rounded-full bg-yellow-400 text-gray-900 shadow-[0_5px_0_rgb(202,138,4)] focus:outline-none"
-      >
-        {isDarkMode ? <MdLightMode size={24} /> : <MdDarkMode size={24} />}
-      </button>
     </div>
   )
 }
