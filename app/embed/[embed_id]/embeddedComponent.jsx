@@ -4,6 +4,7 @@ import { MdLightMode, MdDarkMode } from 'react-icons/md'
 import { calculateScore, getScoreLabel, getScoreColor } from './scoringLogic'
 import { Bar } from 'react-chartjs-2'
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js'
+import { useSearchParams, usePathname } from 'next/navigation'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
@@ -15,6 +16,8 @@ export default function EmbeddedComponent({ embed_id }) {
   const [isDarkMode, setIsDarkMode] = useState(false)
   const [scores, setScores] = useState([])
   const [showResults, setShowResults] = useState(false)
+  const searchParams = useSearchParams()
+  const pathname = usePathname()
 
   useEffect(() => {
     const fetchContent = async () => {
@@ -31,7 +34,13 @@ export default function EmbeddedComponent({ embed_id }) {
     }
 
     fetchContent()
-  }, [embed_id])
+
+    // Check URL for dark mode parameter
+    const mode = searchParams.get('mode')
+    if (mode === 'dark') {
+      setIsDarkMode(true)
+    }
+  }, [embed_id, searchParams])
 
   const nextCard = (score) => {
     setScores(prevScores => [...prevScores, score])
@@ -49,7 +58,13 @@ export default function EmbeddedComponent({ embed_id }) {
   }
 
   const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode)
+    const newMode = !isDarkMode
+    setIsDarkMode(newMode)
+    
+    // Update URL with new mode
+    const newSearchParams = new URLSearchParams(searchParams)
+    newSearchParams.set('mode', newMode ? 'dark' : 'light')
+    window.history.pushState(null, '', `${pathname}?${newSearchParams.toString()}`)
   }
 
   const saveScores = async () => {
@@ -97,8 +112,8 @@ export default function EmbeddedComponent({ embed_id }) {
     return (
       <div className={`flex flex-col items-center justify-center w-full h-screen p-4 transition-colors duration-300 ${isDarkMode ? 'bg-[#191919] text-white' : 'bg-white'}`}>
         <div className="text-center max-w-md">
-          <h2 className="text-2xl font-bold mb-4 text-black">It seems a bit empty here...</h2>
-          <p className="mb-6 text-black">
+          <h2 className={`text-2xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-black'}`}>It seems a bit empty here...</h2>
+          <p className={`mb-6 ${isDarkMode ? 'text-white' : 'text-black'}`}>
             This flashcard set doesn't have any cards yet. Why not add some to start learning?
           </p>
         </div>

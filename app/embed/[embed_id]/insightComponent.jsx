@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, Title } from 'chart.js'
 import { Pie, Line } from 'react-chartjs-2'
 import { MdLightMode, MdDarkMode } from 'react-icons/md'
+import { useSearchParams, usePathname } from 'next/navigation'
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, Title)
 
@@ -13,6 +14,8 @@ export default function InsightComponent({ embed_id }) {
   const [error, setError] = useState(null)
   const [isDarkMode, setIsDarkMode] = useState(false)
   const [activeChart, setActiveChart] = useState('overall')
+  const searchParams = useSearchParams()
+  const pathname = usePathname()
 
   useEffect(() => {
     async function fetchData() {
@@ -34,10 +37,22 @@ export default function InsightComponent({ embed_id }) {
     }
 
     fetchData();
-  }, [embed_id]);
+
+    // Check URL for dark mode parameter
+    const mode = searchParams.get('mode')
+    if (mode === 'dark') {
+      setIsDarkMode(true)
+    }
+  }, [embed_id, searchParams]);
 
   const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
+    const newMode = !isDarkMode
+    setIsDarkMode(newMode)
+    
+    // Update URL with new mode
+    const newSearchParams = new URLSearchParams(searchParams)
+    newSearchParams.set('mode', newMode ? 'dark' : 'light')
+    window.history.pushState(null, '', `${pathname}?${newSearchParams.toString()}`)
   }
 
   if (loading) return (
@@ -154,7 +169,7 @@ export default function InsightComponent({ embed_id }) {
       {/* Dark/Light mode toggle button */}
       <button 
         onClick={toggleDarkMode} 
-        className="absolute top-4 right-4 p-2 rounded-full bg-yellow-400 text-gray-900 shadow-[0_5px_0_rgb(202,138,4)] focus:outline-none transition-transform duration-300 transform hover:scale-105 active:scale-95"
+        className="absolute top-4 right-4 p-2 rounded-full bg-yellow-400 text-gray-900 shadow-[0_5px_0_rgb(202,138,4)] focus:outline-none transition-all duration-300 transform hover:scale-110 active:scale-95 z-20"
       >
         {isDarkMode ? <MdLightMode size={24} /> : <MdDarkMode size={24} />}
       </button>
@@ -163,11 +178,11 @@ export default function InsightComponent({ embed_id }) {
         {activeChart === 'overall' ? (
           <div className="w-full flex justify-between">
             <div className="w-1/2 h-[60vh]">
-              <h3 className="text-center mb-2">Overall Performance</h3>
+              <h3 className="text-center mb-2 text-xl font-bold">Overall Performance</h3>
               <Pie data={overallData} options={chartOptions} />
             </div>
             <div className="w-1/2 h-[60vh]">
-              <h3 className="text-center mb-2">Today's Performance</h3>
+              <h3 className="text-center mb-2 text-xl font-bold">Today's Performance</h3>
               {todayPerformance ? (
                 <Pie data={todayPerformance} options={chartOptions} />
               ) : (
