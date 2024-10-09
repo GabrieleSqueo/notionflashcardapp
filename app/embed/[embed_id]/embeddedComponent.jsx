@@ -269,7 +269,15 @@ export default function EmbeddedComponent({ embed_id }) {
                   {index < currentCard.hiddenWords.length && (
                     <span 
                       onClick={() => handleWordClick(index)}
-                      className={`cursor-pointer ${revealedWords.includes(index) ? '' : 'bg-gray-500 text-transparent'} rounded px-1`}
+                      className={`
+                        inline-block cursor-pointer rounded px-2 py-1 mx-1
+                        transition-all duration-300 ease-in-out
+                        ${revealedWords.includes(index) 
+                          ? 'bg-green-500 text-white' 
+                          : `${isDarkMode ? 'bg-gray-600' : 'bg-gray-300'} text-transparent`}
+                        hover:scale-110 hover:shadow-lg
+                        animate-wiggle
+                      `}
                     >
                       {currentCard.hiddenWords[index].word}
                     </span>
