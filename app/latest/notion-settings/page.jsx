@@ -77,7 +77,7 @@ export default function NotionSettings() {
                                 <p className="text-green-600 mb-4">Your Notion account is currently linked.</p>
                                 <button
                                     onClick={handleUnlink}
-                                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 shadow-[0_3px_0_rgb(185,28,28)] text-sm font-bold transition-all duration-150 active:shadow-[0_0_0_rgb(185,28,28)] active:translate-y-[3px] hover:shadow-[0_2px_0_rgb(185,28,28)] hover:translate-y-[3px] overflow-hidden"
                                     disabled={loading}
                                 >
                                     <MdLinkOff className="mr-2 h-5 w-5" />

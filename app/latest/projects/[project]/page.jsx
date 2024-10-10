@@ -45,8 +45,8 @@ const FlashcardList = ({ flashcards }) => {
 
 // LoadingSpinner component
 const LoadingSpinner = () => (
-    <div className="flex justify-center items-center h-screen">
-        <MdRefresh className="animate-spin text-4xl text-indigo-500" />
+    <div className="flex justify-center items-center h-screen bg-gradient-to-br from-blue-100 to-purple-100">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-indigo-500"></div>
     </div>
 );
 

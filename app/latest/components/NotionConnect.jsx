@@ -72,7 +72,7 @@ const NotionConnect = ({ isConnected }) => {
           <Link href="/latest/notion-settings" className="block">
             <button
               onClick={(e) => handleButtonClick(e, () => {})}
-              className="w-full flex items-center justify-center px-4 py-2 bg-indigo-500 text-white rounded-xl shadow-[0_3px_0_rgb(67,56,202)] text-sm font-bold transition-all duration-150 active:shadow-[0_0_0_rgb(67,56,202)] active:translate-y-[3px]"
+              className="w-full flex items-center justify-center px-4 py-2 bg-indigo-500 text-white rounded-xl shadow-[0_3px_0_rgb(67,56,202)] text-sm font-bold transition-all duration-150 active:shadow-[0_0_0_rgb(67,56,202)] active:translate-y-[3px] hover:shadow-[0_2px_0_rgb(67,56,202)] hover:translate-y-[3px] overflow-hidden"
             >
               <MdSettings className="w-5 h-5 mr-2" />
               Manage Notion settings

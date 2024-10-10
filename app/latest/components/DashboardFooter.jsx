@@ -59,7 +59,7 @@ const DashboardFooter = ({ isNotionConnected }) => {
                     <Link href="/latest/new-project" className="block">
                         <button 
                             onClick={(e) => handleButtonClick(e, () => {})}
-                            className="w-full flex items-center justify-center px-6 py-3 bg-green-500 text-white rounded-xl shadow-[0_5px_0_rgb(18,142,63)] text-xl font-bold transition-all duration-150 active:shadow-[0_0_0_rgb(18,142,63)] active:translate-y-[5px]"
+                            className="w-full flex items-center justify-center px-6 py-3 bg-green-500 text-white rounded-xl shadow-[0_5px_0_rgb(18,142,63)] text-xl font-bold transition-all duration-150 hover:shadow-[0_2px_0_rgb(18,142,63)] active:shadow-[0_0_0_rgb(18,142,63)] active:translate-y-[5px] hover:translate-y-[3px] overflow-hidden"
                         >
                             <MdAdd className="w-6 h-6 mr-2" />
                             Create New Flashcard Project
