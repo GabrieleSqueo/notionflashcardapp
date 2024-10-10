@@ -128,7 +128,7 @@ export default function NewProjectPage() {
             </div>
 
             <div className="mb-6">
-              <h2 className="text-xl font-semibold text-black mb-4">Select embed mode:</h2>
+              <h2 className="text-xl font-semibold text-black mb-4">Select embed theme:</h2>
               <div className="flex justify-center space-x-4">
                 <button
                   onClick={() => setEmbedMode('light')}
