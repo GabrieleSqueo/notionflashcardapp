@@ -5,8 +5,8 @@ export async function POST(request) {
     const supabase = createClient();
 
     try {
-        const requestBody = await request.json(); // Read the request body once
-        const { action, pageId, selectedPageName } = requestBody; // Extract all needed data
+        const requestBody = await request.json();
+        const { action, pageId, selectedPageName, embedMode } = requestBody; // Extract embedMode
 
         const { data: userData, error: userError } = await supabase.auth.getUser();
 
@@ -168,7 +168,7 @@ export async function POST(request) {
                             object: 'block',
                             type: 'embed',
                             embed: {
-                                url: `https://notionflashcard.com/embed/${set_id}?insight=true`,
+                                url: `https://notionflashcard.com/embed/${set_id}?insight=true&mode=${embedMode}`,
                             },
                         },
                         {
@@ -182,7 +182,7 @@ export async function POST(request) {
                             object: 'block',
                             type: 'embed',
                             embed: {
-                                url: `https://notionflashcard.com/embed/${set_id}`,
+                                url: `https://notionflashcard.com/embed/${set_id}?mode=${embedMode}`,
                             },
                         },
                         {

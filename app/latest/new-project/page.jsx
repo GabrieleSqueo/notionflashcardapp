@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { MdAddCircle, MdCheck } from 'react-icons/md';
+import { MdAddCircle, MdCheck, MdLightMode, MdDarkMode } from 'react-icons/md';
 import { useRouter } from 'next/navigation';
 
 export default function NewProjectPage() {
@@ -10,6 +10,7 @@ export default function NewProjectPage() {
   const [selectedPageId, setSelectedPageId] = useState('');
   const [selectedPageName, setSelectedPageName] = useState(''); // New state for selected page name
   const [isLoading, setIsLoading] = useState(true);
+  const [embedMode, setEmbedMode] = useState('light'); // New state for embed mode
   const router = useRouter();
 
   useEffect(() => {
@@ -57,7 +58,8 @@ export default function NewProjectPage() {
         body: JSON.stringify({ 
           action: 'createPage', 
           pageId: selectedPageId,
-          selectedPageName: selectedPageName // Pass the selected page name
+          selectedPageName: selectedPageName,
+          embedMode: embedMode // Pass the selected embed mode
         }),
       });
 
@@ -122,6 +124,30 @@ export default function NewProjectPage() {
                     </button>
                   ))}
                 </div>
+              </div>
+            </div>
+
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold text-black mb-4">Select embed mode:</h2>
+              <div className="flex justify-center space-x-4">
+                <button
+                  onClick={() => setEmbedMode('light')}
+                  className={`flex items-center px-4 py-2 rounded-lg ${
+                    embedMode === 'light' ? 'bg-indigo-500 text-white' : 'bg-gray-200 text-gray-700'
+                  }`}
+                >
+                  <MdLightMode className="mr-2" />
+                  Light Mode
+                </button>
+                <button
+                  onClick={() => setEmbedMode('dark')}
+                  className={`flex items-center px-4 py-2 rounded-lg ${
+                    embedMode === 'dark' ? 'bg-indigo-500 text-white' : 'bg-gray-200 text-gray-700'
+                  }`}
+                >
+                  <MdDarkMode className="mr-2" />
+                  Dark Mode
+                </button>
               </div>
             </div>
 
