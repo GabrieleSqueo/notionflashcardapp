@@ -27,7 +27,7 @@ const Navbar = ({ username }) => {
     };
 
     return (
-        <nav className="bg-gradient-to-r from-blue-100 to-purple-100 shadow-md w-full">
+        <nav className="bg-white shadow-md w-full">
             <div className="mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
                     <div className="flex items-center">
@@ -43,7 +43,7 @@ const Navbar = ({ username }) => {
                             <button 
                                 type="submit"
                                 onClick={(e) => handleButtonClick(e, logout)}
-                                className="flex items-center justify-center px-4 py-2 bg-red-500 text-white rounded-xl shadow-[0_3px_0_rgb(185,28,28)] text-sm font-bold transition-all duration-150 active:shadow-[0_0_0_rgb(185,28,28)] active:translate-y-[3px]"
+                                className="flex items-center justify-center px-4 py-2 bg-red-500 text-white rounded-xl shadow-[0_3px_0_rgb(185,28,28)] text-sm font-bold transition-all duration-150 hover:bg-red-600 hover:shadow-[0_2px_0_rgb(185,28,28)] hover:translate-y-[1px] active:shadow-[0_0_0_rgb(185,28,28)] active:translate-y-[3px]"
                             >
                                 <MdExitToApp className="w-5 h-5 mr-2" />
                                 Logout
@@ -51,7 +51,7 @@ const Navbar = ({ username }) => {
                         </form>
                     </div>
                     <div className="sm:hidden">
-                        <button onClick={toggleMenu} className="text-indigo-600">
+                        <button onClick={toggleMenu} className="text-indigo-600 hover:text-indigo-800 transition-colors duration-150">
                             {isMenuOpen ? <MdClose size={24} /> : <MdMenu size={24} />}
                         </button>
                     </div>
@@ -59,7 +59,7 @@ const Navbar = ({ username }) => {
             </div>
             {/* Mobile menu */}
             {isMenuOpen && (
-                <div className="sm:hidden">
+                <div className="sm:hidden bg-white border-t border-gray-200">
                     <div className="px-2 pt-2 pb-3 space-y-1">
                         <div className="flex items-center justify-center px-4 py-2 bg-indigo-500 text-white rounded-xl shadow-[0_3px_0_rgb(67,56,202)] text-sm font-bold">
                             <MdPerson className="w-5 h-5 mr-2" />
@@ -69,7 +69,7 @@ const Navbar = ({ username }) => {
                             <button 
                                 type="submit"
                                 onClick={(e) => handleButtonClick(e, logout)}
-                                className="flex items-center justify-center w-full px-4 py-2 bg-red-500 text-white rounded-xl shadow-[0_3px_0_rgb(185,28,28)] text-sm font-bold transition-all duration-150 active:shadow-[0_0_0_rgb(185,28,28)] active:translate-y-[3px]"
+                                className="flex items-center justify-center w-full px-4 py-2 bg-red-500 text-white rounded-xl shadow-[0_3px_0_rgb(185,28,28)] text-sm font-bold transition-all duration-150 hover:bg-red-600 hover:shadow-[0_2px_0_rgb(185,28,28)] hover:translate-y-[1px] active:shadow-[0_0_0_rgb(185,28,28)] active:translate-y-[3px]"
                             >
                                 <MdExitToApp className="w-5 h-5 mr-2" />
                                 Logout

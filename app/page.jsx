@@ -3,7 +3,6 @@ import { useRef } from 'react';
 import Hero from "./components/hero";
 import Problem from "./components/problem";
 import Solution from "./components/solution";
-import Versus from "./components/versus";
 import WhyNow from "./components/whyNow";
 import WhyThis from "./components/whyThis";
 import Footer from "./components/footer";
