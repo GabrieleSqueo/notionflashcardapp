@@ -82,7 +82,7 @@ const Hero = ({ backgroundColor }) => {
             transition={{ delay: 0.8, duration: 0.8 }}
             className="mt-4 md:mt-6 text-lg sm:text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto"
           >
-            Transform your Notion notes into dynamic, interactive learning tools. Boost retention and accelerate your study process with our AI-powered flashcards.
+            Transform your Notion notes into dynamic, interactive learning tools. Boost retention and accelerate your study process with our flashcards.
           </motion.p>
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -99,7 +99,7 @@ const Hero = ({ backgroundColor }) => {
           transition={{ delay: 1.2, duration: 0.8 }}
           className="mt-12 md:mt-16 flex flex-col items-center"
         >
-          <p className="text-white text-base md:text-lg mb-4">Discover why our flashcards are <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">perfect for you</span></p>
+          <p className="text-white text-base md:text-lg mb-4">Discover why our flashcards are <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">PERFECT FOR YOU</span></p>
           <a href="#problem" className="animate-bounce">
             <svg className="w-8 h-8 md:w-12 md:h-12 text-white cursor-pointer" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
               <path d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
