@@ -27,7 +27,6 @@ export async function GET(request) {
             .eq('set_id', set_id)
             .single();
         if (flashcardSetError) throw flashcardSetError;
-        console.log(flashcardSet)
 
         // Get the user's Notion key
         const { data: userData, error: userDataError } = await supabase

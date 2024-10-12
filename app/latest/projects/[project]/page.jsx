@@ -106,7 +106,6 @@ export default function FlashcardSetDetails() {
                     throw new Error('Failed to fetch flashcard set');
                 }
                 const setData = await setResponse.json();
-                console.log("SET DATA: ", setData);
                 setFlashcardSet(setData);
 
                 // Fetch flashcards

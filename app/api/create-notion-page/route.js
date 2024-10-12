@@ -58,7 +58,6 @@ export async function POST(request) {
             }
 
             const pages = await response.json();
-            console.log("----PAGES: ", JSON.stringify(pages, null, 2));
             const formattedPages = pages.results
                 .map(page => {
                     // Check for title under both "title" and "Name"
