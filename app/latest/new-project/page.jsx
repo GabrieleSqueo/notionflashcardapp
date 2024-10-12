@@ -104,7 +104,7 @@ export default function NewProjectPage() {
       <div className="w-full max-w-6xl">
         <div className="flex items-center mb-6">
           <Link href="/latest" className="mr-4">
-            <button className="p-3 rounded-full bg-indigo-600 text-white hover:bg-indigo-700 transition-colors shadow-lg transform hover:scale-105">
+            <button className="p-2 rounded-xl bg-white text-indigo-600 hover:bg-indigo-200 transition-colors shadow-[0_2px_0_rgb(203,213,225)] hover:shadow-[0_1px_0_rgb(203,213,225)] hover:translate-y-[1px]">
               <MdArrowBack size={24} />
             </button>
           </Link>
