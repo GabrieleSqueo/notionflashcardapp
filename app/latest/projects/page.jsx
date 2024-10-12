@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { MdAddCircle, MdFolderOpen, MdRefresh } from 'react-icons/md';
+import { MdAddCircle, MdFolderOpen, MdRefresh, MdArrowBack } from 'react-icons/md';
 
 export default function UserFlashcardSets() {
 	const [flashcardSets, setFlashcardSets] = useState([]);
@@ -64,7 +64,15 @@ export default function UserFlashcardSets() {
 		<div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-100">
 			<main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
 				<div className="px-4 py-6 sm:px-0">
-					<h2 className="text-3xl font-bold text-gray-900 mb-6">Your Flashcard Sets</h2>
+					<div className="flex justify-between items-center mb-6">
+						<h2 className="text-3xl font-bold text-gray-900">Your Flashcard Sets</h2>
+						<Link href="/latest">
+							<button className="flex items-center px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors duration-200">
+								<MdArrowBack className="mr-2" />
+								Back to homepage
+							</button>
+						</Link>
+					</div>
 					
 					{error && (
 						<div className="mb-6 text-red-600 text-sm bg-red-100 border border-red-400 rounded-lg p-4">{error}</div>
