@@ -1,4 +1,3 @@
-import "./globals.css";
 import { Metadata } from "./metadata";
 
 export const metadata = {
@@ -6,7 +5,11 @@ export const metadata = {
   description: "Less Confusion Higher Grades",
 };
 
-export default function RootLayout({ children }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="en">
       <head>
@@ -56,11 +59,7 @@ export default function RootLayout({ children }) {
         {/* Canonical URL */}
         <link rel="canonical" href={Metadata.meta.ogUrl} />
       </head>
-      <body
-        className={`antialiased`}
-      >
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
-  );
+  )
 }
