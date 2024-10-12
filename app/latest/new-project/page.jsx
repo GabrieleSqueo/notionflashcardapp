@@ -122,7 +122,7 @@ export default function NewProjectPage() {
             <div className="flex flex-col md:flex-row gap-6 mb-6">
               <div className="flex-grow">
                 <h2 className="text-xl font-semibold text-black mb-4">Select a page:</h2>
-                <div className="relative mb-4">
+                <div className="relative mb-4 rounded-xl shadow-[0_5px_0_rgb(203,213,225)] transition-all duration-150 overflow-hidden">
                   <MdSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                   <input
                     type="text"
@@ -132,7 +132,7 @@ export default function NewProjectPage() {
                     className="text-black w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
-                <div className="bg-white shadow-md rounded-xl p-6">
+                <div className="bg-white rounded-xl p-6 shadow-[0_5px_0_rgb(203,213,225)] transition-all duration-150 overflow-hidden">
                   <div className="overflow-y-auto max-h-96 border border-gray-200 rounded-lg">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2 p-2">
                       {filteredPages.map((page) => (

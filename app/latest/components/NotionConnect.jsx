@@ -50,7 +50,7 @@ const NotionConnect = ({ isConnected }) => {
   };
 
   return (
-    <div className="bg-white overflow-hidden shadow-lg rounded-xl">
+    <div className="bg-white rounded-xl shadow-[0_5px_0_rgb(203,213,225)] transition-all duration-150 overflow-hidden">
       <div className="px-6 py-5">
         <div className="flex items-center">
           <div className="flex-shrink-0 bg-purple-500 rounded-xl p-3">
