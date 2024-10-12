@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { MdAddCircle, MdCheck, MdLightMode, MdDarkMode } from 'react-icons/md';
+import { MdAddCircle, MdCheck, MdLightMode, MdDarkMode, MdSearch } from 'react-icons/md';
 import { useRouter } from 'next/navigation';
 
 export default function NewProjectPage() {
@@ -11,6 +11,8 @@ export default function NewProjectPage() {
   const [selectedPageName, setSelectedPageName] = useState(''); // New state for selected page name
   const [isLoading, setIsLoading] = useState(true);
   const [embedMode, setEmbedMode] = useState('light'); // New state for embed mode
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredPages, setFilteredPages] = useState([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -41,6 +43,14 @@ export default function NewProjectPage() {
 
     fetchPages();
   }, []);
+
+  useEffect(() => {
+    // Filter pages based on search term
+    const filtered = pages.filter(page =>
+      page.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredPages(filtered);
+  }, [searchTerm, pages]);
 
   const handleCreateNotionPage = async () => {
     if (!selectedPageId) {
@@ -89,7 +99,7 @@ export default function NewProjectPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 to-purple-100 p-4">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 to-purple-100">
       <div className="bg-white shadow-md rounded-xl p-6 w-full max-w-4xl">
         <h1 className="text-3xl text-indigo-600 font-bold mb-6 text-center">Create New Flashcard Page</h1>
         {status && <p className="mb-6 text-center text-gray-600">{status}</p>}
@@ -102,9 +112,19 @@ export default function NewProjectPage() {
           <>
             <div className="mb-6">
               <h2 className="text-xl font-semibold text-black mb-4">Select a page:</h2>
+              <div className="relative mb-4">
+                <MdSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search pages..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="text-black w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
               <div className="overflow-y-auto max-h-96 border border-gray-200 rounded-lg">
                 <div className="grid grid-cols-2 gap-2 p-2">
-                  {pages.map((page) => (
+                  {filteredPages.map((page) => (
                     <button
                       key={page.id}
                       onClick={() => handlePageSelect(page.id, page.title)}
@@ -129,24 +149,24 @@ export default function NewProjectPage() {
 
             <div className="mb-6">
               <h2 className="text-xl font-semibold text-black mb-4">Select embed theme:</h2>
-              <div className="flex justify-center space-x-4">
+              <div className="flex space-x-4">
                 <button
                   onClick={() => setEmbedMode('light')}
-                  className={`flex items-center px-4 py-2 rounded-lg ${
-                    embedMode === 'light' ? 'bg-indigo-500 text-white' : 'bg-gray-200 text-gray-700'
+                  className={`flex items-center px-3 py-1 rounded-xl text-sm font-bold transition-all duration-150 active:shadow-[0_0_0_rgb(126,34,206)] active:translate-y-[3px] disabled:opacity-50 disabled:cursor-not-allowed ${
+                    embedMode === 'light' ? 'bg-indigo-500 text-white shadow-[0_3px_0_rgb(126,34,206)]' : 'bg-gray-200 text-gray-700 shadow-[0_3px_0_rgb(125, 125, 125)]'
                   }`}
                 >
-                  <MdLightMode className="mr-2" />
-                  Light Mode
+                  <MdLightMode className="mr-1 text-base" />
+                  Light
                 </button>
                 <button
                   onClick={() => setEmbedMode('dark')}
-                  className={`flex items-center px-4 py-2 rounded-lg ${
-                    embedMode === 'dark' ? 'bg-indigo-500 text-white' : 'bg-gray-200 text-gray-700'
+                  className={`flex items-center px-3 py-1 rounded-xl text-sm font-bold transition-all duration-150 active:shadow-[0_0_0_rgb(126,34,206)] active:translate-y-[3px] disabled:opacity-50 disabled:cursor-not-allowed ${
+                    embedMode === 'dark' ? 'bg-indigo-500 text-white shadow-[0_3px_0_rgb(126,34,206)]' : 'bg-gray-200 text-gray-700 shadow-[0_3px_0_rgb(125, 125, 125)]'
                   }`}
                 >
-                  <MdDarkMode className="mr-2" />
-                  Dark Mode
+                  <MdDarkMode className="mr-1 text-base" />
+                  Dark
                 </button>
               </div>
             </div>
@@ -154,11 +174,11 @@ export default function NewProjectPage() {
             <button
               onClick={handleCreateNotionPage}
               disabled={!selectedPageId}
-              className={`w-full text-white px-6 py-3 rounded-xl shadow-[0_5px_0_rgb(67,56,202)] hover:shadow-[0_2px_0_rgb(67,56,202)] hover:translate-y-[3px] transition-all duration-150 font-medium text-lg flex items-center justify-center ${
-                selectedPageId ? 'bg-indigo-500 hover:bg-indigo-600' : 'bg-gray-400 cursor-not-allowed'
+              className={`w-full text-white px-4 py-2 hover:shadow-lg flex items-center justify-center rounded-xl text-sm font-bold transition-all duration-150 active:shadow-[0_0_0_rgb(126,34,206)] active:translate-y-[3px] disabled:opacity-50 disabled:cursor-not-allowed ${
+                selectedPageId ? 'bg-indigo-500 hover:bg-indigo-600 shadow-[0_3px_0_rgb(126,34,206)]' : 'bg-gray-400 cursor-not-allowed shadow-[0_3px_0_rgb(125, 125, 125)]'
               }`}
             >
-              <MdAddCircle className="mr-2 h-6 w-6" />
+              <MdAddCircle className="mr-2 h-5 w-5" />
               Create Notion Page
             </button>
           </>
