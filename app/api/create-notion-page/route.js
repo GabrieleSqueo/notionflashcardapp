@@ -59,19 +59,21 @@ export async function POST(request) {
 
             const pages = await response.json();
             console.log("----PAGES: ", JSON.stringify(pages, null, 2));
-            const formattedPages = pages.results.map(page => {
-                // Check for title under both "title" and "Name"
-                const titleProperty = page.properties.title || page.properties.Name;
-                const title = titleProperty && titleProperty.title && titleProperty.title.length > 0 
-                    ? titleProperty.title[0].text.content // Correct path to the title
-                    : 'Untitled'; // Safely access the title
+            const formattedPages = pages.results
+                .map(page => {
+                    // Check for title under both "title" and "Name"
+                    const titleProperty = page.properties.title || page.properties.Name;
+                    const title = titleProperty && titleProperty.title && titleProperty.title.length > 0 
+                        ? titleProperty.title[0].text.content // Correct path to the title
+                        : 'Untitled'; // Safely access the title
 
-                return {
-                    id: page.id,
-                    title: title,
-                    icon: page.icon?.type === 'emoji' ? page.icon.emoji : null, // Get the emoji if available
-                };
-            });
+                    return {
+                        id: page.id,
+                        title: title,
+                        icon: page.icon?.type === 'emoji' ? page.icon.emoji : null, // Get the emoji if available
+                    };
+                })
+                .filter(page => page.title !== 'Untitled'); // Filter out pages with the title "Untitled"
 
             return NextResponse.json({ success: true, pages: formattedPages });
         } else if (action === 'createPage' && pageId) {
