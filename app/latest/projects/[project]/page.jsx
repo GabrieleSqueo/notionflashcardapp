@@ -4,11 +4,11 @@ import { useParams } from 'next/navigation';
 import { MdContentCopy, MdCheck, MdDelete, MdPlayArrow, MdRefresh, MdInfo, MdLightMode, MdDarkMode } from 'react-icons/md';
 import Link from 'next/link';
 
-// ActionButton component
-const ActionButton = ({ icon: Icon, text, onClick, bgColor }) => (
+// Updated ActionButton component
+const ActionButton = ({ icon: Icon, text, onClick, bgColor, shadowColor }) => (
     <button
         onClick={onClick}
-        className={`flex items-center justify-center ${bgColor} px-4 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 shadow-[0_3px_0_rgb(126,34,206)] text-sm font-bold transition-all duration-150 active:shadow-[0_0_0_rgb(67,56,202)] hover:shadow-[0_2px_0_rgb(67,56,202)] hover:translate-y-[3px] active:translate-y-[3px] disabled:opacity-50 disabled:cursor-not-allowed flex items-center`}
+        className={`flex items-center justify-center ${bgColor} px-4 py-2 rounded-xl text-white hover:bg-opacity-90 shadow-[0_3px_0_${shadowColor}] text-sm font-bold transition-all duration-150 active:shadow-[0_0_0_${shadowColor}] hover:shadow-[0_2px_0_${shadowColor}] hover:translate-y-[1px] active:translate-y-[3px] disabled:opacity-50 disabled:cursor-not-allowed`}
     >
         <Icon className="mr-2 h-5 w-5" />
         {text}
@@ -192,6 +192,7 @@ export default function FlashcardSetDetails() {
                                         icon={MdPlayArrow} 
                                         text="Start Learning" 
                                         bgColor="bg-green-500"
+                                        shadowColor="rgb(34,197,94)"
                                     />
                                 </Link>
                             </div>
@@ -319,6 +320,7 @@ export default function FlashcardSetDetails() {
                                     text="Delete Set" 
                                     onClick={() => setIsModalOpen(true)} 
                                     bgColor="bg-red-500"
+                                    shadowColor="rgb(239,68,68)"
                                 />
                             </div>
                         </>
