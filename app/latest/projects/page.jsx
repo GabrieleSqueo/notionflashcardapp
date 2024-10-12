@@ -64,14 +64,13 @@ export default function UserFlashcardSets() {
 		<div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-100">
 			<main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
 				<div className="px-4 py-6 sm:px-0">
-					<div className="flex justify-between items-center mb-6">
-						<h2 className="text-3xl font-bold text-gray-900">Your Flashcard Sets</h2>
-						<Link href="/latest">
-							<button className="flex items-center px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors duration-200">
-								<MdArrowBack className="mr-2" />
-								Back to homepage
+					<div className="flex items-center mb-6">
+						<Link href="/latest" className="mr-4">
+							<button className="p-3 rounded-full bg-indigo-600 text-white hover:bg-indigo-700 transition-colors shadow-lg transform hover:scale-105">
+								<MdArrowBack size={24} />
 							</button>
 						</Link>
+						<h2 className="text-3xl font-bold text-gray-900">Your Flashcard Sets</h2>
 					</div>
 					
 					{error && (

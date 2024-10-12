@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { MdAddCircle, MdCheck, MdLightMode, MdDarkMode, MdSearch } from 'react-icons/md';
+import { MdAddCircle, MdCheck, MdLightMode, MdDarkMode, MdSearch, MdArrowBack } from 'react-icons/md';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function NewProjectPage() {
   const [status, setStatus] = useState('');
@@ -99,9 +100,17 @@ export default function NewProjectPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 to-purple-100">
-      <div className="bg-white shadow-md rounded-xl p-6 w-full max-w-4xl">
-        <h1 className="text-3xl text-indigo-600 font-bold mb-6 text-center">Create New Flashcard Page</h1>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 to-purple-100 p-6">
+      <div className="w-full max-w-6xl">
+        <div className="flex items-center mb-6">
+          <Link href="/latest" className="mr-4">
+            <button className="p-3 rounded-full bg-indigo-600 text-white hover:bg-indigo-700 transition-colors shadow-lg transform hover:scale-105">
+              <MdArrowBack size={24} />
+            </button>
+          </Link>
+          <h1 className="text-3xl font-bold text-black flex-grow">Create New Flashcard Page</h1>
+        </div>
+        
         {status && <p className="mb-6 text-center text-gray-600">{status}</p>}
         
         {isLoading ? (
@@ -110,64 +119,77 @@ export default function NewProjectPage() {
           </div>
         ) : (
           <>
-            <div className="mb-6">
-              <h2 className="text-xl font-semibold text-black mb-4">Select a page:</h2>
-              <div className="relative mb-4">
-                <MdSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search pages..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="text-black w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-              </div>
-              <div className="overflow-y-auto max-h-96 border border-gray-200 rounded-lg">
-                <div className="grid grid-cols-2 gap-2 p-2">
-                  {filteredPages.map((page) => (
-                    <button
-                      key={page.id}
-                      onClick={() => handlePageSelect(page.id, page.title)}
-                      className={`text-black w-full p-4 text-left transition-all duration-200 border rounded-lg ${
-                        selectedPageId === page.id
-                          ? 'bg-indigo-100 border-indigo-500'
-                          : 'bg-white hover:bg-gray-50 border-transparent'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium truncate">
-                          {page.icon && <span className="mr-2">{page.icon}</span>}
-                          {page.title || 'Untitled'}
-                        </span>
-                        {selectedPageId === page.id && <MdCheck className="text-indigo-500 flex-shrink-0 ml-2" />}
-                      </div>
-                    </button>
-                  ))}
+            <div className="flex flex-col md:flex-row gap-6 mb-6">
+              <div className="flex-grow">
+                <h2 className="text-xl font-semibold text-black mb-4">Select a page:</h2>
+                <div className="relative mb-4">
+                  <MdSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search pages..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="text-black w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+                <div className="bg-white shadow-md rounded-xl p-6">
+                  <div className="overflow-y-auto max-h-96 border border-gray-200 rounded-lg">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 p-2">
+                      {filteredPages.map((page) => (
+                        <button
+                          key={page.id}
+                          onClick={() => handlePageSelect(page.id, page.title)}
+                          className={`text-black w-full p-4 text-left transition-all duration-200 border rounded-lg ${
+                            selectedPageId === page.id
+                              ? 'bg-indigo-100 border-indigo-500'
+                              : 'bg-white hover:bg-gray-50 border-transparent'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium truncate">
+                              {page.icon && <span className="mr-2">{page.icon}</span>}
+                              {page.title || 'Untitled'}
+                            </span>
+                            {selectedPageId === page.id && <MdCheck className="text-indigo-500 flex-shrink-0 ml-2" />}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="mb-6">
-              <h2 className="text-xl font-semibold text-black mb-4">Select embed theme:</h2>
-              <div className="flex space-x-4">
-                <button
-                  onClick={() => setEmbedMode('light')}
-                  className={`flex items-center px-3 py-1 rounded-xl text-sm font-bold transition-all duration-150 active:shadow-[0_0_0_rgb(126,34,206)] active:translate-y-[3px] disabled:opacity-50 disabled:cursor-not-allowed ${
-                    embedMode === 'light' ? 'bg-indigo-500 text-white shadow-[0_3px_0_rgb(126,34,206)]' : 'bg-gray-200 text-gray-700 shadow-[0_3px_0_rgb(125, 125, 125)]'
-                  }`}
-                >
-                  <MdLightMode className="mr-1 text-base" />
-                  Light
-                </button>
-                <button
-                  onClick={() => setEmbedMode('dark')}
-                  className={`flex items-center px-3 py-1 rounded-xl text-sm font-bold transition-all duration-150 active:shadow-[0_0_0_rgb(126,34,206)] active:translate-y-[3px] disabled:opacity-50 disabled:cursor-not-allowed ${
-                    embedMode === 'dark' ? 'bg-indigo-500 text-white shadow-[0_3px_0_rgb(126,34,206)]' : 'bg-gray-200 text-gray-700 shadow-[0_3px_0_rgb(125, 125, 125)]'
-                  }`}
-                >
-                  <MdDarkMode className="mr-1 text-base" />
-                  Dark
-                </button>
+              <div className="md:w-64">
+                <h2 className="text-xl font-semibold text-black mb-4">Select embed theme:</h2>
+                <div className="flex items-center">
+                  <label htmlFor="embed-mode-toggle" className="flex items-center cursor-pointer">
+                    <div className="relative">
+                      <input
+                        type="checkbox"
+                        id="embed-mode-toggle"
+                        className="sr-only"
+                        checked={embedMode === 'dark'}
+                        onChange={() => setEmbedMode(embedMode === 'light' ? 'dark' : 'light')}
+                      />
+                      <div className="w-14 h-7 bg-gray-300 rounded-full shadow-inner transition-colors duration-300 ease-in-out">
+                        <div
+                          className={`absolute left-1 top-1 w-5 h-5 bg-white rounded-full shadow-md transform transition-transform duration-300 ease-in-out flex items-center justify-center ${
+                            embedMode === 'dark' ? 'translate-x-7 bg-indigo-600' : ''
+                          }`}
+                        >
+                          {embedMode === 'light' ? (
+                            <MdLightMode className="w-3 h-3 text-yellow-500" />
+                          ) : (
+                            <MdDarkMode className="w-3 h-3 text-indigo-200" />
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <span className="ml-3 text-md font-semibold text-gray-700">
+                      {embedMode === 'light' ? 'Light Mode' : 'Dark Mode'}
+                    </span>
+                  </label>
+                </div>
               </div>
             </div>
 
