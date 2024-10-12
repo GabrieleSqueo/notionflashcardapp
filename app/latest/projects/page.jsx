@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { MdAddCircle, MdFolderOpen, MdRefresh, MdArrowBack } from 'react-icons/md';
+import { MdFolderOpen, MdRefresh, MdArrowBack, MdAdd } from 'react-icons/md';
 
 export default function UserFlashcardSets() {
 	const [flashcardSets, setFlashcardSets] = useState([]);
@@ -64,13 +64,21 @@ export default function UserFlashcardSets() {
 		<div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-100">
 			<main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
 				<div className="px-4 py-6 sm:px-0">
-					<div className="flex items-center mb-6">
-						<Link href="/latest" className="mr-4">
-							<button className="p-3 rounded-full bg-indigo-600 text-white hover:bg-indigo-700 transition-colors shadow-lg transform hover:scale-105">
-								<MdArrowBack size={24} />
+					<div className="flex items-center justify-between mb-6">
+						<div className="flex items-center">
+							<Link href="/latest" className="mr-4">
+								<button className="p-2 rounded-xl bg-white text-indigo-600 hover:bg-indigo-200 transition-colors shadow-[0_2px_0_rgb(203,213,225)] hover:shadow-[0_1px_0_rgb(203,213,225)] hover:translate-y-[1px]">
+									<MdArrowBack size={24} />
+								</button>
+							</Link>
+							<h2 className="text-3xl font-bold text-gray-900">Your Flashcard Sets</h2>
+						</div>
+						<Link href="/latest/new-project">
+							<button className="px-4 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 shadow-[0_3px_0_rgb(126,34,206)] text-sm font-bold transition-all duration-150 active:shadow-[0_0_0_rgb(67,56,202)] hover:shadow-[0_2px_0_rgb(67,56,202)] hover:translate-y-[3px] active:translate-y-[3px] disabled:opacity-50 disabled:cursor-not-allowed flex items-center">
+								<MdAdd size={20} className="mr-2" />
+								<span>New Set</span>
 							</button>
 						</Link>
-						<h2 className="text-3xl font-bold text-gray-900">Your Flashcard Sets</h2>
 					</div>
 					
 					{error && (
@@ -78,15 +86,8 @@ export default function UserFlashcardSets() {
 					)}
 
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-						<ButtonLink 
-							href="/latest/new-project" 
-							icon={MdAddCircle}
-							title="Create New Set"
-							description="Add a new flashcard set"
-						/>
-
 						{loading ? (
-							<div className="col-span-2 flex justify-center items-center">
+							<div className="col-span-full flex justify-center items-center">
 								<MdRefresh className="animate-spin text-4xl text-indigo-500" />
 							</div>
 						) : (
