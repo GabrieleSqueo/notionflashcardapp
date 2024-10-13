@@ -201,12 +201,12 @@ export default function NewProjectPage() {
                 </div>
                 
                 <h3 className="text-lg font-semibold text-black mb-2">Example:</h3>
-                <div className={`border rounded-lg overflow-hidden ${embedMode === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
+                <div className={`border rounded-xl shadow-[0_5px_0_rgb(203,213,225)] transition-all duration-150 overflow-hidden ${embedMode === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
                   <iframe
                     id="example-embed"
                     src={`https://www.notionflashcard.com/embed/18d32144-e5f5-448a-8be8-e55c34749c91?mode=${embedMode}`}
                     width="100%"
-                    height="500"
+                    height="700"
                     frameBorder="0"
                     allowFullScreen
                   ></iframe>
