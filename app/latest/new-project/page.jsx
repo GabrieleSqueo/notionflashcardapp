@@ -100,7 +100,7 @@ export default function NewProjectPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 to-purple-100 p-6">
-      <div className="w-full max-w-6xl">
+      <div className="w-full max-w-[1400px]">
         <div className="flex items-center mb-6">
           <Link href="/latest" className="mr-4">
             <button className="p-2 rounded-xl bg-white text-indigo-600 hover:bg-indigo-200 transition-colors shadow-[0_2px_0_rgb(203,213,225)] hover:shadow-[0_1px_0_rgb(203,213,225)] hover:translate-y-[1px]">
@@ -118,8 +118,8 @@ export default function NewProjectPage() {
           </div>
         ) : (
           <>
-            <div className="flex flex-col md:flex-row gap-6 mb-6">
-              <div className="flex-grow">
+            <div className="flex flex-col lg:flex-row gap-6 mb-6">
+              <div className="lg:w-[60%]">
                 <h2 className="text-xl font-semibold text-black mb-4">Select a page:</h2>
                 <div className="relative mb-4 rounded-xl shadow-[0_5px_0_rgb(203,213,225)] transition-all duration-150 overflow-hidden">
                   <MdSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -132,7 +132,7 @@ export default function NewProjectPage() {
                   />
                 </div>
                 <div className="bg-white rounded-xl p-6 shadow-[0_5px_0_rgb(203,213,225)] transition-all duration-150 overflow-hidden">
-                  <div className="overflow-y-auto max-h-96 border border-gray-200 rounded-lg">
+                  <div className="overflow-y-auto max-h-[600px] border border-gray-200 rounded-lg">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2 p-2">
                       {filteredPages.map((page) => (
                         <button
@@ -158,9 +158,9 @@ export default function NewProjectPage() {
                 </div>
               </div>
 
-              <div className="md:w-64">
+              <div className="lg:w-[40%]">
                 <h2 className="text-xl font-semibold text-black mb-4">Select embed theme:</h2>
-                <div className="flex items-center">
+                <div className="flex items-center mb-4">
                   <label htmlFor="embed-mode-toggle" className="flex items-center cursor-pointer">
                     <div className="relative">
                       <input
@@ -168,7 +168,17 @@ export default function NewProjectPage() {
                         id="embed-mode-toggle"
                         className="sr-only"
                         checked={embedMode === 'dark'}
-                        onChange={() => setEmbedMode(embedMode === 'light' ? 'dark' : 'light')}
+                        onChange={() => {
+                          const newMode = embedMode === 'light' ? 'dark' : 'light';
+                          setEmbedMode(newMode);
+                          // Update the iframe src when the mode changes
+                          const iframe = document.getElementById('example-embed');
+                          if (iframe) {
+                            const currentSrc = new URL(iframe.src);
+                            currentSrc.searchParams.set('theme', newMode);
+                            iframe.src = currentSrc.toString();
+                          }
+                        }}
                       />
                       <div className="w-14 h-7 bg-gray-300 rounded-full shadow-inner transition-colors duration-300 ease-in-out">
                         <div
@@ -188,6 +198,18 @@ export default function NewProjectPage() {
                       {embedMode === 'light' ? 'Light Mode' : 'Dark Mode'}
                     </span>
                   </label>
+                </div>
+                
+                <h3 className="text-lg font-semibold text-black mb-2">Example:</h3>
+                <div className={`border rounded-lg overflow-hidden ${embedMode === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
+                  <iframe
+                    id="example-embed"
+                    src={`https://www.notionflashcard.com/embed/18d32144-e5f5-448a-8be8-e55c34749c91?mode=${embedMode}`}
+                    width="100%"
+                    height="500"
+                    frameBorder="0"
+                    allowFullScreen
+                  ></iframe>
                 </div>
               </div>
             </div>
