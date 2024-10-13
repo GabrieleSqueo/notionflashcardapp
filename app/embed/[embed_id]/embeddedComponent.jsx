@@ -229,7 +229,7 @@ export default function EmbeddedComponent({ embed_id }) {
       <div className="w-full max-w-3xl flex-grow flex flex-col justify-center items-center">
         {currentCard.type === 'flashcard' ? (
           <div 
-            className={`relative w-full max-w-2xl h-[60vh] sm:h-[70vh] cursor-pointer transition-transform duration-500 transform-style-3d ${isFlipped ? 'rotate-y-180' : ''}`} 
+            className={`relative w-full max-w-2xl h-[40vh] sm:h-[50vh] cursor-pointer transition-transform duration-500 transform-style-3d ${isFlipped ? 'rotate-y-180' : ''}`} 
             onClick={toggleFlip}
           >
             <div className={`absolute w-full h-full backface-hidden rounded-xl p-6 flex items-center justify-center ${
@@ -252,7 +252,7 @@ export default function EmbeddedComponent({ embed_id }) {
             </div>
           </div>
         ) : (
-          <div className={`w-full max-w-2xl h-[60vh] sm:h-[70vh] rounded-xl p-6 flex items-center justify-center ${
+          <div className={`w-full max-w-2xl h-[40vh] sm:h-[50vh] rounded-xl p-6 flex items-center justify-center ${
             isDarkMode 
               ? 'bg-gray-800 shadow-[0_5px_0_rgb(59,130,246)]' 
               : 'bg-gray-100 shadow-[0_5px_0_rgb(34,197,94)]'
