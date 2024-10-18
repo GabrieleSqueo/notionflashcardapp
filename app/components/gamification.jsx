@@ -4,7 +4,7 @@ import { MdInsights } from 'react-icons/md';
 
 const Gamification = () => {
   return (
-    <section className="relative min-h-screen bg-gradient-to-b from-white via-blue-50 to-purple-100 overflow-hidden">
+    <section className="relative bg-gradient-to-b from-white via-blue-50 to-purple-100 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-16">
           <motion.div 
