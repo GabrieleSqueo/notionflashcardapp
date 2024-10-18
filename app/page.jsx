@@ -3,6 +3,7 @@ import { useRef } from 'react';
 import Hero from "./components/hero";
 import Problem from "./components/problem";
 import Solution from "./components/solution";
+import Gamification from "./components/gamification"; // Import the new section
 import WhyNow from "./components/whyNow";
 import WhyThis from "./components/whyThis";
 import Footer from "./components/footer";
@@ -17,6 +18,7 @@ const HomePage = () => {
       <Problem backgroundColor="bg-[#14103F]" />
       <div className="bg-gradient-to-r from-[#1a1a60] to-[#2a2a80]">
         <Solution />
+        <Gamification /> {/* Add the new section here */}
         <WhyThis />
         <AboutUsOne />
         <WhyNow />
@@ -27,4 +29,3 @@ const HomePage = () => {
 }
 
 export default HomePage;
-
