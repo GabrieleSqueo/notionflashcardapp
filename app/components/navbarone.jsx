@@ -43,7 +43,7 @@ const Navbarone = () => {
             <Link href="#whyNow" className={`hidden md:inline-block font-semibold text-lg transition-all duration-150 ${isScrolled ? 'text-gray-700 hover:text-indigo-600' : 'text-black hover:text-indigo-200'}`}>
               Pricing
             </Link>
-            <Link href="https://buy.stripe.com/8wM7uX51TeEsdCU6oo">
+            <Link href="/latest/login">
               <button 
                 onClick={handleSignIn}
                 className={`px-6 py-3 bg-indigo-500 text-white rounded-xl shadow-[0_3px_0_rgb(67,56,202)] text-lg font-bold transition-all duration-150 active:shadow-[0_0_0_rgb(67,56,202)] active:translate-y-[3px] hover:bg-indigo-600 hover:shadow-[0_2px_0_rgb(67,56,202)] hover:translate-y-[1px]`}
