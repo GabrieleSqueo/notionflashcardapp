@@ -39,16 +39,10 @@ const AboutUsOne = () => {
               <h4 className="text-2xl font-semibold text-gray-900 mb-6">Follow Our Journey</h4>
               <div className="flex flex-col sm:flex-row gap-4">
                 <SocialLink 
-                  href="https://www.instagram.com/landriluca_/" 
+                  href="https://www.instagram.com/sololandri/" 
                   icon={<FaInstagram />} 
                   label="Luca's Instagram" 
                   color="bg-[#FF4B4B]"
-                />
-                <SocialLink 
-                  href="https://www.instagram.com/squeogabriele/" 
-                  icon={<FaInstagram />} 
-                  label="Gabriele's Instagram" 
-                  color="bg-[#1CB0F6]"
                 />
               </div>
             </div>

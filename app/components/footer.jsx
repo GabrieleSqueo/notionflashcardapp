@@ -28,7 +28,7 @@ const Footer = () => {
         <p className="text-sm text-gray-400 mt-2">
           Made with ❤️ by {' '}
           <a 
-            href="https://www.instagram.com/landriluca_/" 
+            href="https://www.instagram.com/sololandri/" 
             target="_blank" 
             rel="noopener noreferrer" 
             className="text-blue-500 hover:text-blue-700 transition-colors duration-300"
