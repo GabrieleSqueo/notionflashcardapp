@@ -11,7 +11,7 @@ const WhyNow = () => {
   };
 
   return (
-    <section className="py-28 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-purple-100 via-blue-50 to-white overflow-hidden">
+    <section id='whyNow' className="py-28 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-purple-100 via-blue-50 to-white overflow-hidden">
       <div className="max-w-4xl mx-auto text-center">
         <h2 className="text-4xl sm:text-5xl font-bold mb-8 text-gray-900">
           🚀 <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600">Unlock Your Learning Potential</span>

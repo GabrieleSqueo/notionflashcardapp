@@ -35,10 +35,10 @@ const Navbarone = () => {
             </span>
           </div>
           <div className="flex items-center space-x-8">
-            <Link href="#features" className={`hidden md:inline-block font-semibold text-lg transition-all duration-150 ${isScrolled ? 'text-gray-700 hover:text-indigo-600' : 'text-black hover:text-indigo-200'}`}>
+            <Link href="#solution" className={`hidden md:inline-block font-semibold text-lg transition-all duration-150 ${isScrolled ? 'text-gray-700 hover:text-indigo-600' : 'text-black hover:text-indigo-200'}`}>
               Features
             </Link>
-            <Link href="#pricing" className={`hidden md:inline-block font-semibold text-lg transition-all duration-150 ${isScrolled ? 'text-gray-700 hover:text-indigo-600' : 'text-black hover:text-indigo-200'}`}>
+            <Link href="#whyNow" className={`hidden md:inline-block font-semibold text-lg transition-all duration-150 ${isScrolled ? 'text-gray-700 hover:text-indigo-600' : 'text-black hover:text-indigo-200'}`}>
               Pricing
             </Link>
             <button 

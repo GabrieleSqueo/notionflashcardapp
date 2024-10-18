@@ -27,7 +27,7 @@ const Solution = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-100 via-blue-100 to-white p-8" ref={ref}>
+    <div id='solution' className="min-h-screen bg-gradient-to-b from-purple-100 via-blue-100 to-white p-8" ref={ref}>
       <section className="py-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden" id="solution">
         <motion.div 
           className="max-w-6xl mx-auto relative z-10 flex flex-wrap justify-center gap-8"
