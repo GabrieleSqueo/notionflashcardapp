@@ -1,52 +1,55 @@
 "use client"
 import { useState, useEffect } from 'react';
-import logo from '../assets/logo.png';
+import logo from '../../public/logo.png';
 import Image from 'next/image';
-import IframeComponent from './iFrameComponent';
 import Link from 'next/link';
-import WaitlistModal from './WaitlistModal';
 
 const Navbarone = () => {
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      if (window.scrollY > 10) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleButtonClick = () => {
-    document.getElementById('cta4').showModal();
+  const handleSignIn = () => {
+    // Add your sign in logic here
+    console.log('Sign In clicked');
   };
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out ${isScrolled ? 'bg-[#14103F]/80 backdrop-blur-md' : 'bg-transparent'}`}>
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out ${isScrolled ? 'bg-white shadow-md' : 'bg-transparent'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 md:h-20">
+        <div className="flex items-center justify-between h-20 md:h-24">
           <div className="flex items-center">
-            <Image src={logo} height={40} width={40} alt="NotionFlashcard Logo" className="mr-3" />
-            <span className="text-white text-xl font-bold hidden md:inline bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
+            <Image src={logo} height={48} width={48} alt="NotionFlashcard Logo" className="mr-3" />
+            <span className={`text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-indigo-600`}>
               NotionFlashcard
             </span>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-8">
+            <Link href="#features" className={`hidden md:inline-block font-semibold text-lg transition-all duration-150 ${isScrolled ? 'text-gray-700 hover:text-indigo-600' : 'text-black hover:text-indigo-200'}`}>
+              Features
+            </Link>
+            <Link href="#pricing" className={`hidden md:inline-block font-semibold text-lg transition-all duration-150 ${isScrolled ? 'text-gray-700 hover:text-indigo-600' : 'text-black hover:text-indigo-200'}`}>
+              Pricing
+            </Link>
             <button 
-              onClick={handleButtonClick}
-              className="px-4 py-2 text-white font-semibold rounded-full transition duration-300 ease-in-out transform hover:scale-105 bg-white bg-opacity-10 hover:bg-opacity-20 backdrop-blur-md border border-white border-opacity-10 hover:border-opacity-20 shadow-lg"
+              onClick={handleSignIn}
+              className={`px-6 py-3 bg-indigo-500 text-white rounded-xl shadow-[0_3px_0_rgb(67,56,202)] text-lg font-bold transition-all duration-150 active:shadow-[0_0_0_rgb(67,56,202)] active:translate-y-[3px] hover:bg-indigo-600 hover:shadow-[0_2px_0_rgb(67,56,202)] hover:translate-y-[1px]`}
             >
-              <span className="font-bold text-sm md:text-base">
-                Join Waitlist
-              </span>
+              Sign In
             </button>
           </div>
         </div>
       </div>
-            <WaitlistModal 
-              modalId="cta4" 
-              onClose={() => document.getElementById('cta4').close()} 
-            />
     </nav>
   );
 };
