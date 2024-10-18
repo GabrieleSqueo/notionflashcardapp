@@ -50,7 +50,7 @@ const DashboardFooter = ({ isNotionConnected }) => {
     };
 
     return (
-        <footer className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-blue-100 to-purple-100 shadow-md p-4">
+        <footer className="fixed bottom-0 left-0 right-0 shadow-md p-4">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {error && (
                     <div className="mb-2 text-red-600 text-sm text-center">{error}</div>

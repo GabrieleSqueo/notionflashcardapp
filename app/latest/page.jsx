@@ -28,12 +28,11 @@ export default async function HomePage() {
     const username = userData?.username || 'User'
 
     return (
-        <div className="min-h-screen bg-gray-100">
+        <div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-100">
             {data && data.user && (
                 <Navbar username={username} />
             )}
             <MainContent isNotionConnected={isNotionConnected} />
-            <DashboardFooter isNotionConnected={isNotionConnected} />
         </div>
     )
 }
