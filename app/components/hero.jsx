@@ -2,6 +2,7 @@
 import { motion } from 'framer-motion';
 import Navbarone from './navbarone';
 import { MdAddCircle, MdPlayArrow } from 'react-icons/md';
+import Link from 'next/link';
 
 const Hero = () => {
   return (
@@ -26,13 +27,14 @@ const Hero = () => {
               Boost retention and accelerate your study process with our dynamic, AI-powered flashcard system.
             </p>
             <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4">
-              <button 
-                className="px-6 py-3 bg-indigo-500 text-white rounded-xl shadow-[0_3px_0_rgb(67,56,202)] text-lg font-bold transition-all duration-150 active:shadow-[0_0_0_rgb(67,56,202)] active:translate-y-[3px] hover:shadow-[0_2px_0_rgb(67,56,202)] hover:translate-y-[3px] overflow-hidden flex items-center justify-center"
-                onClick={() => document.getElementById('cta3').showModal()}
-              >
-                <MdAddCircle className="mr-2 h-6 w-6" />
-                Get Started Now
-              </button>
+              <Link href="#whyNow">
+                <button 
+                  className="px-6 py-3 bg-indigo-500 text-white rounded-xl shadow-[0_3px_0_rgb(67,56,202)] text-lg font-bold transition-all duration-150 active:shadow-[0_0_0_rgb(67,56,202)] active:translate-y-[3px] hover:shadow-[0_2px_0_rgb(67,56,202)] hover:translate-y-[3px] overflow-hidden flex items-center justify-center"
+                >
+                  <MdAddCircle className="mr-2 h-6 w-6" />
+                  Get Started Now
+                </button>
+              </Link>
               <button 
                 className="px-6 py-3 bg-white text-indigo-600 rounded-xl shadow-[0_3px_0_rgb(203,213,225)] text-lg font-bold transition-all duration-150 active:shadow-[0_0_0_rgb(203,213,225)] active:translate-y-[3px] hover:shadow-[0_2px_0_rgb(203,213,225)] hover:translate-y-[3px] overflow-hidden flex items-center justify-center"
               >
