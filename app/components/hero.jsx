@@ -24,7 +24,7 @@ const Hero = () => {
               Into Flashcards
             </h1>
             <p className="text-xl text-gray-600 mb-8 max-w-lg mx-auto lg:mx-0">
-              Boost retention and accelerate your study process with our dynamic, AI-powered flashcard system.
+              Learn faster with our interactive flashcards and track your progress with intuitive charts. All without ever leaving Notion.
             </p>
             <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4">
               <Link href="#whyNow">
