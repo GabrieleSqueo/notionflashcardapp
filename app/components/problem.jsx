@@ -26,7 +26,7 @@ const Problem = () => {
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
             If you're like many students and professionals, your Notion workspace is full of notes, but studying and retaining that information feels like a struggle. You've tried different methods—flashcard apps, separate tools, even traditional notecards— <strong className="text-indigo-600">but nothing sticks.</strong> Constantly switching between tools adds frustration, making the process disjointed.
           </p>
-          <div className="mb-10 p-8 bg-white rounded-2xl shadow-xl max-w-3xl mx-auto">
+          <div className="mb-10 p-8 max-w-3xl mx-auto hover:shadow-md hover:translate-y-[3px] transition-all duration-150 bg-white border rounded-xl shadow-[0_5px_0_rgb(203,213,225)] overflow-hidden">
             <p className="text-lg text-gray-800 mb-4">
               Despite your organized Notion notes, switching between apps to study feels frustrating and time-consuming. Traditional flashcard methods seem outdated, and managing multiple tools breaks your flow. Study sessions become a juggling act—re-reading notes here, creating flashcards there, and no real retention in the end.
             </p>

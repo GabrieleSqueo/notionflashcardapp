@@ -47,30 +47,30 @@ const Solution = () => {
                 title: "All-in-One Solution",
                 description: "Create and review flashcards directly within Notion.",
                 icon: "🚀",
-                color: "#58CC02"
+                color: "#4b4b4b"
               },
               {
                 title: "Effortless Conversion",
                 description: "Transform your Notion notes into interactive flashcards with just a few clicks.",
                 icon: "🔄",
-                color: "#FF4B4B"
+                color: "#4b4b4b"
               },
               {
                 title: "Enhanced Learning",
                 description: "Boost retention with spaced repetition and customizable quizzes.",
                 icon: "📈",
-                color: "#1CB0F6"
+                color: "#4b4b4b"
               }
             ].map((item, index) => (
               <motion.div
                 key={item.title}
-                className="bg-white rounded-xl shadow-[0_5px_0_rgb(203,213,225)] overflow-hidden hover:shadow-[0_2px_0_rgb(203,213,225)] hover:translate-y-[3px] transition-all duration-150"
+                className="hover:translate-y-[3px] transition-all duration-150 bg-white border rounded-xl shadow-[0_5px_0_rgb(203,213,225)] overflow-hidden"
                 variants={itemVariants}
               >
                 <div className="px-6 py-5">
                   <div className="flex items-center flex-col mb-4">
                     <div className="text-5xl mb-3">{item.icon}</div>
-                    <h3 className={`text-2xl font-bold text-[${item.color}]`}>{item.title}</h3>
+                    <h3 className={`text-2xl font-bold text-${item.color} block text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600`}>{item.title}</h3>
                   </div>
                   <p className="text-gray-600 text-center">{item.description}</p>
                 </div>
@@ -84,24 +84,24 @@ const Solution = () => {
                 title: "No More App-Switching",
                 description: "Our solution allows you to convert your Notion notes into interactive flashcards with just a few clicks, saving you time and reducing frustration.",
                 icon: "📱",
-                color: "#FFC800"
+                color: "#4b4b4b"
               },
               {
                 title: "Proven Effectiveness",
                 description: "Our method is based on educational research that enhances memory retention and learning outcomes.",
                 icon: "🏆",
-                color: "#9069CD"
+                color: "#4b4b4b"
               }
             ].map((item, index) => (
               <motion.div
                 key={item.title}
-                className="bg-white rounded-xl shadow-[0_5px_0_rgb(203,213,225)] overflow-hidden hover:shadow-[0_2px_0_rgb(203,213,225)] hover:translate-y-[3px] transition-all duration-150"
+                className="hover:translate-y-[3px] transition-all duration-150 bg-white border rounded-xl shadow-[0_5px_0_rgb(203,213,225)] overflow-hidden"
                 variants={itemVariants}
               >
                 <div className="px-6 py-5">
                   <div className="flex items-center flex-col mb-4">
                     <div className="text-5xl mb-3">{item.icon}</div>
-                    <h3 className={`text-2xl font-bold text-[${item.color}]`}>{item.title}</h3>
+                    <h3 className={`text-2xl font-bold text-${item.color} block text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600`}>{item.title}</h3>
                   </div>
                   <p className="text-gray-600 text-center">{item.description}</p>
                 </div>
