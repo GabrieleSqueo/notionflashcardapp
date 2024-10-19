@@ -188,69 +188,6 @@ export async function POST(request) {
                         },
                         {
                             object: 'block',
-                            type: 'heading_2',
-                            heading_2: {
-                                rich_text: [{ type: 'text', text: { content: 'Write your flashcards here' } }]
-                            }
-                        },
-                        {
-                            object: 'block',
-                            type: 'paragraph',
-                            paragraph: {
-                                rich_text: [
-                                    {
-                                        type: 'text',
-                                        text: {
-                                            content: 'To add a flashcard, use the format "Question == Answer" and press enter after each flashcard.',
-                                        },
-                                    },
-                                ],
-                            },
-                        },
-                        {
-                            object: 'block',
-                            type: 'paragraph',
-                            paragraph: {
-                                rich_text: [
-                                    {
-                                        type: 'text',
-                                        text: {
-                                            content: 'Write the flashcards all above this line',
-                                        },
-                                    },
-                                ],
-                            },
-                        },
-                        {
-                            object: 'block',
-                            type: 'paragraph',
-                            paragraph: {
-                                rich_text: [
-                                    {
-                                        type: 'text',
-                                        text: {
-                                            content: 'When you write a phrase like "Einstein is a [scientist]", the flashcards will hide the word in the brackets.',
-                                        },
-                                    },
-                                ],
-                            },
-                        },
-                        {
-                            object: 'block',
-                            type: 'quote',
-                            quote: {
-                                rich_text: [
-                                    {
-                                        type: 'text',
-                                        text: {
-                                            content: 'If you want to update the flashcard embed, please hit CTRL+R and refresh',
-                                        },
-                                    },
-                                ],
-                            },
-                        },
-                        {
-                            object: 'block',
                             type: 'divider',
                             divider: {}
                         },

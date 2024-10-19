@@ -60,6 +60,7 @@ export default function EmbeddedComponent({ embed_id }) {
 
     if (currentCardIndex === flashcards.length - 1) {
       setShowResults(true)
+      saveScores([...scores, score]) // Save scores including the last one
     } else {
       setCurrentCardIndex(prevIndex => prevIndex + 1)
     }
@@ -79,7 +80,7 @@ export default function EmbeddedComponent({ embed_id }) {
     window.history.pushState(null, '', `${pathname}?${newSearchParams.toString()}`)
   }
 
-  const saveScores = async () => {
+  const saveScores = async (finalScores) => {
     try {
       const response = await fetch('/api/save-scores', {
         method: 'POST',
@@ -88,7 +89,7 @@ export default function EmbeddedComponent({ embed_id }) {
         },
         body: JSON.stringify({
           flashcardSetId: embed_id,
-          scores: scores,
+          scores: finalScores,
         }),
       });
 
@@ -104,9 +105,6 @@ export default function EmbeddedComponent({ embed_id }) {
 
   const handleScoreClick = (score) => {
     nextCard(score);
-    if (currentCardIndex === flashcards.length - 1) {
-      saveScores();
-    }
   };
 
   const resetQuiz = () => {

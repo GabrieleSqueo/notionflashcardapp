@@ -39,31 +39,42 @@ export async function GET(request) {
 
         // Extract page ID from the set_link
         const pageId = flashcardSet.set_link.split('-').pop();
-        // Fetch the page content
-        const response = await fetch(`https://api.notion.com/v1/blocks/${pageId}/children`, {
+
+        // Fetch the page to get its parent
+        const pageResponse = await fetch(`https://api.notion.com/v1/pages/${pageId}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${notionKey}`,
                 'Notion-Version': '2022-06-28',
             },
         });
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Error fetching page content from Notion: ${errorText}`);
+        if (!pageResponse.ok) {
+            const errorText = await pageResponse.text();
+            throw new Error(`Error fetching page from Notion: ${errorText}`);
         }
-        const pageContent = await response.json();
-        // Extract and filter paragraph content
-        const flashcards = pageContent.results
-            .filter(block => block.type === 'paragraph')
-            .map(block => block.paragraph.rich_text.map(text => text.plain_text).join(''))
-            .filter(text => text.trim() !== '') // Remove empty paragraphs
-            .filter(text => {
-                // Exclude the instruction text
-                if (text.includes("To add a flashcard, use the format") && 
-                    text.includes("Question == Answer")) {
-                    return false;
-                }
-                return true; // Keep all other paragraphs
+        const pageData = await pageResponse.json();
+        const parentId = pageData.parent.page_id;
+
+        // Fetch the content of the parent page
+        const parentResponse = await fetch(`https://api.notion.com/v1/blocks/${parentId}/children?page_size=100`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${notionKey}`,
+                'Notion-Version': '2022-06-28',
+            },
+        });
+        if (!parentResponse.ok) {
+            const errorText = await parentResponse.text();
+            throw new Error(`Error fetching parent page content from Notion: ${errorText}`);
+        }
+        const parentContent = await parentResponse.json();
+
+        // Extract and filter quote content
+        const flashcards = parentContent.results
+            .filter(block => block.type === 'quote')
+            .flatMap(block => {
+                const quoteText = block.quote.rich_text.map(text => text.plain_text).join('');
+                return quoteText.split('\n').map(line => line.trim()).filter(line => line !== '');
             })
             .map(text => {
                 const parts = text.split('==').map(part => part.trim());

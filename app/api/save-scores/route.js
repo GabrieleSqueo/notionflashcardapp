@@ -24,6 +24,7 @@ function encryptData(data) {
 
 export async function POST(req) {
   const { flashcardSetId, scores } = await req.json();
+  console.log(`Received scores:`, scores);
   const supabase = createClient();
 
   try {
@@ -53,37 +54,114 @@ export async function POST(req) {
 
     const notionApiKey = userData.notion_key;
 
-    // Search for the Notion page with the set_link
-    const searchResponse = await fetch(`https://api.notion.com/v1/search`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${notionApiKey}`,
-        'Notion-Version': '2022-06-28',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        query: setLink,
-        filter: { property: 'object', value: 'page' }
-      })
-    });
+    // Get the page ID from the set_link
+    const pageId = setLink.split('-').pop();
 
-    const searchData = await searchResponse.json();
-    if (!searchData.results || searchData.results.length === 0) throw new Error('Notion page not found');
-
-    const parentPageId = searchData.results[0].id;
-
-    // Fetch the content of the parent page to find the "datas_" subpage
-    const parentPageContentResponse = await fetch(`https://api.notion.com/v1/blocks/${parentPageId}/children?page_size=100`, {
+    // Fetch the page to get its parent
+    const pageResponse = await fetch(`https://api.notion.com/v1/pages/${pageId}`, {
+      method: 'GET',
       headers: {
         'Authorization': `Bearer ${notionApiKey}`,
         'Notion-Version': '2022-06-28',
       },
     });
+    if (!pageResponse.ok) {
+      const errorText = await pageResponse.text();
+      throw new Error(`Error fetching page from Notion: ${errorText}`);
+    }
+    const pageData = await pageResponse.json();
+    const parentId = pageData.parent.page_id;
 
-    const parentPageContent = await parentPageContentResponse.json();
+    // Fetch the content of the parent page
+    const parentResponse = await fetch(`https://api.notion.com/v1/blocks/${parentId}/children?page_size=100`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${notionApiKey}`,
+        'Notion-Version': '2022-06-28',
+      },
+    });
+    if (!parentResponse.ok) {
+      const errorText = await parentResponse.text();
+      throw new Error(`Error fetching parent page content from Notion: ${errorText}`);
+    }
+    const parentContent = await parentResponse.json();
+
+    // Extract all flashcards from quote blocks
+    let allFlashcards = [];
+    for (const block of parentContent.results) {
+      if (block.type === 'quote') {
+        const quoteText = block.quote.rich_text[0].plain_text;
+        const flashcardsInQuote = quoteText.split('\n').filter(line => line.trim() !== '');
+        allFlashcards = allFlashcards.concat(flashcardsInQuote);
+      }
+    }
+
+    // Match scores to flashcards
+    const flashcardsWithScores = allFlashcards.map((flashcard, index) => ({
+      flashcard,
+      score: scores[index] || 0
+    }));
+
+    // Update the quote blocks with color based on scores
+    let flashcardIndex = 0;
+    for (const block of parentContent.results) {
+      if (block.type === 'quote') {
+        const quoteText = block.quote.rich_text[0].plain_text;
+        const flashcardsInQuote = quoteText.split('\n');
+        
+        const updatedRichText = flashcardsInQuote.map(flashcard => {
+          const trimmedFlashcard = flashcard.trim();
+          if (trimmedFlashcard !== '') {
+            const score = scores[flashcardIndex] || 0;
+            flashcardIndex++;
+
+            let color = 'default';
+            if (score === 1) color = 'red_background';
+            else if (score === 2) color = 'orange_background';
+            else if (score === 3) color = 'yellow_background';
+            else if (score === 4) color = 'green_background';
+
+            return {
+              type: 'text',
+              text: { content: flashcard },
+              annotations: { color: color }
+            };
+          } else {
+            // Preserve empty lines
+            return {
+              type: 'text',
+              text: { content: '\n' },
+              annotations: { color: 'default' }
+            };
+          }
+        });
+
+        // Update the block
+        const updateResponse = await fetch(`https://api.notion.com/v1/blocks/${block.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Authorization': `Bearer ${notionApiKey}`,
+            'Notion-Version': '2022-06-28',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            quote: {
+              rich_text: updatedRichText
+            }
+          })
+        });
+
+        if (!updateResponse.ok) {
+          const errorText = await updateResponse.text();
+          console.error(`Error updating block in Notion: ${errorText}`);
+        } else {
+          console.log(`Successfully updated block`);
+        }
+      }
+    }
 
     // Find the "datas_" subpage
-    let datasPage = parentPageContent.results.find(block => 
+    let datasPage = parentContent.results.find(block => 
       block.type === 'child_page' && block.child_page.title.toLowerCase() === 'datas_'
     );
 
@@ -99,7 +177,7 @@ export async function POST(req) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          parent: { page_id: parentPageId },
+          parent: { page_id: parentId },
           properties: {
             title: [
               {
