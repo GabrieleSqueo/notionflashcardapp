@@ -196,18 +196,18 @@ export default function EmbeddedComponent({ embed_id }) {
     }
 
     return (
-      <div className={`flex flex-col items-center justify-between w-full min-h-screen p-4 transition-colors duration-300 ${isDarkMode ? 'bg-[#191919] text-white' : 'bg-white'}`}>
+      <div className={`flex flex-col items-center justify-center w-full min-h-screen p-4 transition-colors duration-300 ${isDarkMode ? 'bg-[#191919] text-white' : 'bg-white'}`}>
         {showConfetti && <Confetti />}
-        <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-center">You did it! 🎉</h2>
-        <div className="w-full max-w-4xl flex flex-col md:flex-row justify-center items-center gap-8 pb-24">
-          <div className="w-full md:w-2/3 h-[50vh]">
-            <h3 className="text-xl font-bold mb-4 text-center">Your Results</h3>
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-8 text-center">You did it! 🎉</h2>
+        <div className="w-full max-w-4xl flex flex-col md:flex-row items-center justify-center gap-16">
+          <div className="w-full md:w-2/3 h-[40vh] sm:h-[50vh]">
+            <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-4 text-center">Your Results</h3>
             <Bar data={data} options={options} />
           </div>
-          <div className="w-full md:w-1/3 flex flex-col items-center justify-center">
+          <div className="w-full md:w-1/3 flex justify-center">
             <button 
               onClick={resetQuiz}
-              className="px-6 py-3 bg-indigo-600 text-white rounded-xl shadow-[0_3px_0_rgb(67,56,202)] text-lg font-bold transition-all duration-150 active:shadow-[0_0_0_rgb(67,56,202)] active:translate-y-[3px] hover:bg-indigo-700 w-full max-w-xs"
+              className="px-4 sm:px-6 py-2 sm:py-3 bg-indigo-600 text-white rounded-xl shadow-[0_3px_0_rgb(67,56,202)] text-base sm:text-lg font-bold transition-all duration-150 active:shadow-[0_0_0_rgb(67,56,202)] active:translate-y-[3px] hover:bg-indigo-700 w-full max-w-xs"
             >
               Start Again
             </button>
