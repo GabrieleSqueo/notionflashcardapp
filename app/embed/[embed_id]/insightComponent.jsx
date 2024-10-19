@@ -13,17 +13,10 @@ export default function InsightComponent({ embed_id }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [isDarkMode, setIsDarkMode] = useState(false)
-  const [activeSection, setActiveSection] = useState('overall')
+  const [activeSection, setActiveSection] = useState('today')
   const searchParams = useSearchParams()
   const pathname = usePathname()
-  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 0);
   const chartRef = useRef(null);
-
-  useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   useEffect(() => {
     async function fetchData() {
@@ -52,13 +45,6 @@ export default function InsightComponent({ embed_id }) {
       setIsDarkMode(true)
     }
   }, [embed_id, searchParams]);
-
-  useEffect(() => {
-    if (chartRef.current) {
-      chartRef.current.options.plugins.legend.display = windowWidth > 640;
-      chartRef.current.update();
-    }
-  }, [windowWidth, activeSection, isDarkMode]);
 
   const toggleDarkMode = () => {
     const newMode = !isDarkMode
@@ -127,18 +113,6 @@ export default function InsightComponent({ embed_id }) {
     percentageRight: session.scores.filter(score => score >= 3).length / session.scores.length * 100
   })).sort((a, b) => a.date - b.date);
 
-  // Overall performance data
-  const overallData = {
-    labels: ['Correct (3-4)', 'Incorrect (1-2)'],
-    datasets: [{
-      data: [
-        processedData.reduce((sum, session) => sum + session.scores.filter(score => score >= 3).length, 0),
-        processedData.reduce((sum, session) => sum + session.scores.filter(score => score < 3).length, 0)
-      ],
-      backgroundColor: ['#4CAF50', '#FF5252']
-    }]
-  };
-
   // Today's performance data
   const today = new Date().setHours(0, 0, 0, 0);
   const todayData = processedData.find(session => session.date.setHours(0, 0, 0, 0) === today);
@@ -169,12 +143,12 @@ export default function InsightComponent({ embed_id }) {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        display: false, // This line removes the legend
+        display: false,
       },
       title: {
         display: true,
         text: activeSection === 'today' ? "Today's Performance" : 'Performance Over Time',
-        font: { size: windowWidth > 768 ? 16 : 14, weight: 'bold' }
+        font: { size: 16, weight: 'bold' }
       }
     },
     scales: activeSection === 'performance' ? {
@@ -182,14 +156,14 @@ export default function InsightComponent({ embed_id }) {
         beginAtZero: true,
         max: 4,
         ticks: {
-          font: { size: windowWidth > 768 ? 10 : 8 }
+          font: { size: 12 }
         }
       },
       x: {
         ticks: {
           maxRotation: 45,
           minRotation: 45,
-          font: { size: windowWidth > 768 ? 10 : 8 }
+          font: { size: 12 }
         }
       }
     } : {}
@@ -198,7 +172,7 @@ export default function InsightComponent({ embed_id }) {
   const renderChart = (chartType, data, title) => {
     const ChartComponent = chartType === 'pie' ? Pie : Line;
     return (
-      <div className={`w-full ${windowWidth > 768 ? 'h-[50vh]' : 'h-[45vh]'}`}>
+      <div className="w-full h-[50vh]">
         <h3 className="text-center mb-2 text-lg font-bold">{title}</h3>
         <ChartComponent ref={chartRef} data={data} options={chartOptions} />
       </div>
@@ -208,7 +182,7 @@ export default function InsightComponent({ embed_id }) {
   const SectionButton = ({ section, text }) => (
     <button
       onClick={() => setActiveSection(section)}
-      className={`px-3 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 ${
+      className={`px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 ${
         activeSection === section
           ? 'bg-blue-500 text-white shadow-[0_3px_0_rgb(37,99,235)]'
           : 'bg-gray-200 text-gray-700 shadow-[0_3px_0_rgb(156,163,175)]'
@@ -220,75 +194,35 @@ export default function InsightComponent({ embed_id }) {
 
   return (
     <div className={`relative flex flex-col items-center justify-between w-full min-h-screen p-4 transition-colors duration-300 ${isDarkMode ? 'bg-[#191919] text-white' : 'bg-white text-gray-900'}`}>
-      <button 
-        onClick={toggleDarkMode} 
-        className="absolute top-2 right-2 p-2 rounded-full bg-yellow-400 text-gray-900 shadow-[0_5px_0_rgb(202,138,4)] focus:outline-none transition-all duration-300 transform hover:scale-110 active:scale-95 z-20"
-      >
-        {isDarkMode ? <MdLightMode size={20} /> : <MdDarkMode size={20} />}
-      </button>
-
-      <div className="w-full max-w-4xl flex-grow flex flex-col justify-center items-center mt-8">
-        <div className="w-full flex flex-wrap justify-center mb-4 space-x-2 space-y-2 sm:space-y-0">
-          {windowWidth > 768 ? (
-            <>
-              <SectionButton section="today" text="Today" />
-              <SectionButton section="performance" text="Performance" />
-            </>
-          ) : (
-            <>
-              <SectionButton section="overall" text="Overall Performance" />
-              <SectionButton section="today" text="Today's Performance" />
-              <SectionButton section="performance" text="Performance Over Time" />
-            </>
-          )}
+      <div className="w-full flex justify-between items-center mb-4">
+        <div className="flex space-x-4">
+          <SectionButton section="today" text="Today" />
+          <SectionButton section="performance" text="Performance" />
         </div>
+        <button 
+          onClick={toggleDarkMode} 
+          className="p-2 rounded-full bg-yellow-400 text-gray-900 shadow-[0_5px_0_rgb(202,138,4)] focus:outline-none transition-all duration-300 transform hover:scale-110 active:scale-95"
+        >
+          {isDarkMode ? <MdLightMode size={20} /> : <MdDarkMode size={20} />}
+        </button>
+      </div>
 
-        <div className={`w-full ${windowWidth <= 768 ? 'px-2' : ''}`}>
-          {windowWidth > 768 ? (
-            activeSection === 'today' ? (
-              <div className="w-full flex flex-col md:flex-row justify-between space-y-4 md:space-y-0 md:space-x-4">
-                <div className="w-full md:w-1/2">
-                  {renderChart('pie', overallData, 'Overall Performance')}
+      <div className="w-full max-w-4xl flex-grow flex flex-col justify-center items-center">
+        <div className="w-full">
+          {activeSection === 'today' ? (
+            <div className="w-full flex justify-center">
+              {todayPerformance ? (
+                renderChart('pie', todayPerformance, "Today's Performance")
+              ) : (
+                <div className="flex items-center justify-center h-full">
+                  <p className="text-center">No data available for today</p>
                 </div>
-                <div className="w-full md:w-1/2">
-                  {todayPerformance ? (
-                    renderChart('pie', todayPerformance, "Today's Performance")
-                  ) : (
-                    <div className="flex items-center justify-center h-full">
-                      <p className="text-center">No data available for today</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div className="w-full">
-                {renderChart('line', lineData, 'Performance Over Time')}
-              </div>
-            )
+              )}
+            </div>
           ) : (
-            <>
-              {activeSection === 'overall' && (
-                <div className="w-full">
-                  {renderChart('pie', overallData, 'Overall Performance')}
-                </div>
-              )}
-              {activeSection === 'today' && (
-                <div className="w-full">
-                  {todayPerformance ? (
-                    renderChart('pie', todayPerformance, "Today's Performance")
-                  ) : (
-                    <div className="flex items-center justify-center h-full">
-                      <p className="text-center">No data available for today</p>
-                    </div>
-                  )}
-                </div>
-              )}
-              {activeSection === 'performance' && (
-                <div className="w-full">
-                  {renderChart('line', lineData, 'Performance Over Time')}
-                </div>
-              )}
-            </>
+            <div className="w-full">
+              {renderChart('line', lineData, 'Performance Over Time')}
+            </div>
           )}
         </div>
       </div>
