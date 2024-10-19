@@ -5,6 +5,7 @@ import { calculateScore, getScoreLabel, getScoreColor } from './scoringLogic'
 import { Bar } from 'react-chartjs-2'
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js'
 import { useSearchParams, usePathname } from 'next/navigation'
+import Confetti from 'react-confetti'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
@@ -19,6 +20,7 @@ export default function EmbeddedComponent({ embed_id }) {
   const searchParams = useSearchParams()
   const pathname = usePathname()
   const [revealedWords, setRevealedWords] = useState([])
+  const [showConfetti, setShowConfetti] = useState(false)
 
   useEffect(() => {
     const fetchContent = async () => {
@@ -60,7 +62,9 @@ export default function EmbeddedComponent({ embed_id }) {
 
     if (currentCardIndex === flashcards.length - 1) {
       setShowResults(true)
-      saveScores([...scores, score]) // Save scores including the last one
+      setShowConfetti(true)
+      saveScores([...scores, score])
+      setTimeout(() => setShowConfetti(false), 5000) // Stop confetti after 5 seconds
     } else {
       setCurrentCardIndex(prevIndex => prevIndex + 1)
     }
@@ -165,21 +169,21 @@ export default function EmbeddedComponent({ embed_id }) {
             stepSize: 1,
             precision: 0,
             font: {
-              size: 12,
+              size: 10,
             },
           },
         },
         x: {
           ticks: {
             font: {
-              size: 12,
+              size: 10,
             },
           },
         },
       },
       plugins: {
         legend: {
-          display: false, // This line removes the legend
+          display: false,
         },
         tooltip: {
           callbacks: {
@@ -193,16 +197,22 @@ export default function EmbeddedComponent({ embed_id }) {
 
     return (
       <div className={`flex flex-col items-center justify-between w-full min-h-screen p-4 transition-colors duration-300 ${isDarkMode ? 'bg-[#191919] text-white' : 'bg-white'}`}>
-        <h2 className="text-xl sm:text-2xl font-bold mb-4 text-center">Your Results</h2>
-        <div className="w-full h-[70vh] sm:h-[80vh]">
-          <Bar data={data} options={options} />
+        {showConfetti && <Confetti />}
+        <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-center">You did it! 🎉</h2>
+        <div className="w-full max-w-4xl flex flex-col md:flex-row justify-center items-center gap-8 pb-24">
+          <div className="w-full md:w-2/3 h-[50vh]">
+            <h3 className="text-xl font-bold mb-4 text-center">Your Results</h3>
+            <Bar data={data} options={options} />
+          </div>
+          <div className="w-full md:w-1/3 flex flex-col items-center justify-center">
+            <button 
+              onClick={resetQuiz}
+              className="px-6 py-3 bg-indigo-600 text-white rounded-xl shadow-[0_3px_0_rgb(67,56,202)] text-lg font-bold transition-all duration-150 active:shadow-[0_0_0_rgb(67,56,202)] active:translate-y-[3px] hover:bg-indigo-700 w-full max-w-xs"
+            >
+              Start Again
+            </button>
+          </div>
         </div>
-        <button 
-          onClick={resetQuiz}
-          className="mt-6 px-4 py-2 bg-indigo-600 text-white rounded-xl shadow-[0_3px_0_rgb(67,56,202)] text-sm font-bold transition-all duration-150 active:shadow-[0_0_0_rgb(67,56,202)] active:translate-y-[3px] hover:bg-indigo-700"
-        >
-          Restart Quiz
-        </button>
       </div>
     )
   }
