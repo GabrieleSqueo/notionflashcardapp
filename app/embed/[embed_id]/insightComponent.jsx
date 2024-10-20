@@ -31,6 +31,7 @@ export default function InsightComponent({ embed_id }) {
         }
         setInsightData(data.scoresData);
       } catch (error) {
+        console.error('Error in fetchData:', error);
         setError(error.message);
       } finally {
         setLoading(false);
@@ -106,12 +107,14 @@ export default function InsightComponent({ embed_id }) {
   }
 
   // Process data for charts
-  const processedData = insightData.map(session => ({
-    date: new Date(session.date),
-    scores: session.scores,
-    averageScore: session.scores.reduce((a, b) => a + b, 0) / session.scores.length,
-    percentageRight: session.scores.filter(score => score >= 3).length / session.scores.length * 100
-  })).sort((a, b) => a.date - b.date);
+  const processedData = insightData ? insightData.map(session => {
+    return {
+      date: new Date(session.date),
+      scores: session.scores,
+      averageScore: session.scores.reduce((a, b) => a + b, 0) / session.scores.length,
+      percentageRight: session.scores.filter(score => score >= 3).length / session.scores.length * 100
+    };
+  }).sort((a, b) => a.date - b.date) : [];
 
   // Today's performance data
   const today = new Date().setHours(0, 0, 0, 0);

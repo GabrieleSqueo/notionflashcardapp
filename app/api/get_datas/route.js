@@ -53,37 +53,40 @@ export async function GET(req) {
 
     const notionApiKey = userData.notion_key;
 
-    // Search for the Notion page with the set_link
-    const searchResponse = await fetch(`https://api.notion.com/v1/search`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${notionApiKey}`,
-        'Notion-Version': '2022-06-28',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        query: setLink,
-        filter: { property: 'object', value: 'page' }
-      })
-    });
 
-    const searchData = await searchResponse.json();
-    if (!searchData.results || searchData.results.length === 0) throw new Error('Notion page not found');
-
-    const parentPageId = searchData.results[0].id;
-
-    // Fetch the content of the parent page to find the "datas_" subpage
-    const parentPageContentResponse = await fetch(`https://api.notion.com/v1/blocks/${parentPageId}/children?page_size=100`, {
+    // 1. Search for the page of the setLink
+    const pageId = setLink.split('-').pop();
+    const pageResponse = await fetch(`https://api.notion.com/v1/pages/${pageId}`, {
       headers: {
         'Authorization': `Bearer ${notionApiKey}`,
         'Notion-Version': '2022-06-28',
       },
     });
 
-    const parentPageContent = await parentPageContentResponse.json();
+    if (!pageResponse.ok) {
+      throw new Error(`Failed to fetch page: ${await pageResponse.text()}`);
+    }
 
-    // Find the "datas_" subpage
-    const datasPage = parentPageContent.results.find(block => 
+    const pageData = await pageResponse.json();
+
+    // 2. Find the parent of that page
+    const parentId = pageData.parent.page_id;
+
+    // 3. Find in the parent page a subpage called "datas_"
+    const parentContentResponse = await fetch(`https://api.notion.com/v1/blocks/${parentId}/children?page_size=100`, {
+      headers: {
+        'Authorization': `Bearer ${notionApiKey}`,
+        'Notion-Version': '2022-06-28',
+      },
+    });
+
+    if (!parentContentResponse.ok) {
+      throw new Error(`Failed to fetch parent content: ${await parentContentResponse.text()}`);
+    }
+
+    const parentContent = await parentContentResponse.json();
+
+    const datasPage = parentContent.results.find(block => 
       block.type === 'child_page' && block.child_page.title.toLowerCase() === 'datas_'
     );
 
@@ -94,17 +97,21 @@ export async function GET(req) {
     const datasPageId = datasPage.id;
 
     // Fetch the content of the datas_ page
-    const pageContentResponse = await fetch(`https://api.notion.com/v1/blocks/${datasPageId}/children?page_size=100`, {
+    const datasContentResponse = await fetch(`https://api.notion.com/v1/blocks/${datasPageId}/children?page_size=100`, {
       headers: {
         'Authorization': `Bearer ${notionApiKey}`,
         'Notion-Version': '2022-06-28',
       },
     });
 
-    const pageContent = await pageContentResponse.json();
+    if (!datasContentResponse.ok) {
+      throw new Error(`Failed to fetch datas_ content: ${await datasContentResponse.text()}`);
+    }
+
+    const datasContent = await datasContentResponse.json();
 
     // Process the page content to extract and decrypt the scores data
-    const scoresData = pageContent.results
+    const scoresData = datasContent.results
       .filter(block => block.type === 'paragraph' && block.paragraph.rich_text.length > 0)
       .map(block => {
         const content = block.paragraph.rich_text[0].text.content;
