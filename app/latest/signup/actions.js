@@ -2,6 +2,9 @@
 
 import { createClient } from '../../utils/supabase/server';
 import { headers } from 'next/headers';
+import Stripe from 'stripe';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export async function signup(formData) {
   const supabase = createClient();
@@ -11,8 +14,9 @@ export async function signup(formData) {
   const password = formData.get("password")?.toString();
   const confirmPassword = formData.get("confirmPassword")?.toString();
   const username = formData.get("username")?.toString();
+  const checkoutSessionId = formData.get("checkoutSessionId")?.toString();
 
-  if (!email || !password || !confirmPassword || !username) {
+  if (!email || !password || !confirmPassword || !username || !checkoutSessionId) {
     return { error: 'All fields are required' };
   }
 
@@ -20,33 +24,81 @@ export async function signup(formData) {
     return { error: 'Passwords do not match' };
   }
 
-  // Sign up the user
-  const { data: authData, error: authError } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      emailRedirectTo: `https://notionflashcard.com/auth/callback`,
-    },
-  });
+  try {
+    // Retrieve the Stripe checkout session
+    const session = await stripe.checkout.sessions.retrieve(checkoutSessionId);
 
-  if (authError) {
-    console.error(authError.code + " " + authError.message);
-    return { error: 'Could not authenticate user' };
-  }
+    if (!session || session.payment_status !== 'paid') {
+      return { error: 'Invalid or unpaid checkout session' };
+    }
 
-  // Add user data to the user_data table
-  const { error: userDataError } = await supabase
-    .from('user_data')
-    .insert({
-      user_id: authData.user.id,
-      email: email,
-      username: username,
+    // Sign up the user
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${origin}/auth/callback`,
+      },
     });
 
-  if (userDataError) {
-    console.error(userDataError.code + " " + userDataError.message);
-    return { error: 'Could not create user data' };
+    if (authError) {
+      console.error(authError);
+      return { error: 'Could not authenticate user' };
+    }
+
+    // Add user data to the user_data table
+    const { error: userDataError } = await supabase
+      .from('user_data')
+      .insert({
+        user_id: authData.user.id,
+        email: email,
+        username: username,
+        stripe_customer_id: session.customer,
+        subscription_status: 'active',
+        subscription_type: session.metadata.product_name,
+      });
+
+    if (userDataError) {
+      console.error(userDataError);
+      return { error: 'Could not create user data' };
+    }
+
+    return { message: "Account created successfully. Please check your email to confirm your account." };
+  } catch (error) {
+    console.error('Error in signup process:', error);
+    return { error: 'An unexpected error occurred' };
+  }
+}
+
+export async function updateUser(formData) {
+  const supabase = createClient();
+
+  const email = formData.get("email")?.toString();
+  const username = formData.get("username")?.toString();
+
+  if (!email || !username) {
+    return { error: 'Email and username are required' };
   }
 
-  return { message: "Thanks for signing up! Please check your email to complete the registration process." };
+  try {
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+
+    if (userError) {
+      throw userError;
+    }
+
+    const { error: updateError } = await supabase
+      .from('user_data')
+      .update({ email, username })
+      .eq('user_id', userData.user.id);
+
+    if (updateError) {
+      throw updateError;
+    }
+
+    return { message: "User information updated successfully." };
+  } catch (error) {
+    console.error('Error updating user:', error);
+    return { error: 'Could not update user information' };
+  }
 }

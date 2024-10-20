@@ -1,24 +1,50 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
-import { signup } from './actions';
+import { useState, useEffect } from 'react';
+import { signup, updateUser } from './actions';
 import { MdPersonAdd } from 'react-icons/md';
+import { useSearchParams } from 'next/navigation';
 
 export default function SignUp() {
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [isInitialSignup, setIsInitialSignup] = useState(true);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const checkoutSessionId = searchParams.get('session_id');
+    if (checkoutSessionId) {
+      setIsInitialSignup(true);
+    } else {
+      setIsInitialSignup(false);
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
-    const result = await signup(formData);
-    if (result.error) {
-      setError(result.error);
-      setSuccessMessage('');
+    
+    if (isInitialSignup) {
+      formData.append('checkoutSessionId', searchParams.get('session_id'));
+      const result = await signup(formData);
+      if (result.error) {
+        setError(result.error);
+        setSuccessMessage('');
+      } else {
+        setSuccessMessage(result.message);
+        setError('');
+        setIsInitialSignup(false);
+      }
     } else {
-      setSuccessMessage(result.message);
-      setError('');
+      const result = await updateUser(formData);
+      if (result.error) {
+        setError(result.error);
+        setSuccessMessage('');
+      } else {
+        setSuccessMessage(result.message);
+        setError('');
+      }
     }
   };
 
@@ -30,7 +56,7 @@ export default function SignUp() {
             <MdPersonAdd className="h-8 w-8 text-indigo-600" />
           </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Create your account
+            {isInitialSignup ? 'Create your account' : 'Complete your profile'}
           </h2>
         </div>
         {successMessage ? (
@@ -69,34 +95,38 @@ export default function SignUp() {
                   placeholder="Username"
                 />
               </div>
-              <div>
-                <label htmlFor="password" className="sr-only">
-                  Password
-                </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="new-password"
-                  required
-                  className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                  placeholder="Password"
-                />
-              </div>
-              <div>
-                <label htmlFor="confirmPassword" className="sr-only">
-                  Confirm Password
-                </label>
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  autoComplete="new-password"
-                  required
-                  className="appearance-none rounded-b-xl relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                  placeholder="Confirm Password"
-                />
-              </div>
+              {isInitialSignup && (
+                <>
+                  <div>
+                    <label htmlFor="password" className="sr-only">
+                      Password
+                    </label>
+                    <input
+                      id="password"
+                      name="password"
+                      type="password"
+                      autoComplete="new-password"
+                      required
+                      className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                      placeholder="Password"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="confirmPassword" className="sr-only">
+                      Confirm Password
+                    </label>
+                    <input
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      type="password"
+                      autoComplete="new-password"
+                      required
+                      className="appearance-none rounded-b-xl relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                      placeholder="Confirm Password"
+                    />
+                  </div>
+                </>
+              )}
             </div>
 
             {error && (
@@ -110,16 +140,18 @@ export default function SignUp() {
                 type="submit"
                 className="w-full flex items-center justify-center px-4 py-2 bg-indigo-600 text-white rounded-xl shadow-[0_3px_0_rgb(67,56,202)] text-sm font-bold transition-all duration-150 active:shadow-[0_0_0_rgb(67,56,202)] active:translate-y-[3px] hover:bg-indigo-700"
               >
-                Sign up
+                {isInitialSignup ? 'Sign up' : 'Update Profile'}
               </button>
             </div>
           </form>
         )}
-        <div className="text-center space-y-4">
-          <Link href="/latest/login" className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors duration-200">
-            Already have an account? Log in
-          </Link>
-        </div>
+        {!isInitialSignup && (
+          <div className="text-center space-y-4">
+            <Link href="/latest/login" className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors duration-200">
+              Already have an account? Log in
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );
