@@ -46,6 +46,10 @@ export async function signup(formData) {
       return { error: 'Could not authenticate user' };
     }
 
+    if (!authData.user) {
+      return { error: 'User data is missing after signup' };
+    }
+
     // Add user data to the user_data table
     const { error: userDataError } = await supabase
       .from('user_data')
@@ -60,6 +64,8 @@ export async function signup(formData) {
 
     if (userDataError) {
       console.error(userDataError);
+      // If we fail to insert user data, we should delete the auth user to maintain consistency
+      await supabase.auth.admin.deleteUser(authData.user.id);
       return { error: 'Could not create user data' };
     }
 
