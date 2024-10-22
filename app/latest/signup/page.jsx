@@ -1,50 +1,48 @@
 'use client';
 
-import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { signup, updateUser } from './actions';
+import { createInitialUser, updateUserPassword } from './actions';
 import { MdPersonAdd } from 'react-icons/md';
 import { useSearchParams } from 'next/navigation';
 
 export default function SignUp() {
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [isInitialSignup, setIsInitialSignup] = useState(true);
+  const [userId, setUserId] = useState(null);
   const searchParams = useSearchParams();
 
   useEffect(() => {
     const checkoutSessionId = searchParams.get('session_id');
     if (checkoutSessionId) {
-      setIsInitialSignup(true);
+      createInitialUser(checkoutSessionId).then((result) => {
+        if (result.error) {
+          setError(result.error);
+        } else {
+          setUserId(result.userId);
+          setSuccessMessage('Account created. Please set your password.');
+        }
+      });
     } else {
-      setIsInitialSignup(false);
+      setError('No checkout session ID found');
     }
   }, [searchParams]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
-    
-    if (isInitialSignup) {
-      formData.append('checkoutSessionId', searchParams.get('session_id'));
-      const result = await signup(formData);
-      if (result.error) {
-        setError(result.error);
-        setSuccessMessage('');
-      } else {
-        setSuccessMessage(result.message);
-        setError('');
-        setIsInitialSignup(false);
-      }
+    const password = formData.get('password');
+    const confirmPassword = formData.get('confirmPassword');
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    const result = await updateUserPassword(userId, password);
+    if (result.error) {
+      setError(result.error);
     } else {
-      const result = await updateUser(formData);
-      if (result.error) {
-        setError(result.error);
-        setSuccessMessage('');
-      } else {
-        setSuccessMessage(result.message);
-        setError('');
-      }
+      setSuccessMessage('Password set successfully. You can now log in.');
     }
   };
 
@@ -56,7 +54,7 @@ export default function SignUp() {
             <MdPersonAdd className="h-8 w-8 text-indigo-600" />
           </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            {isInitialSignup ? 'Create your account' : 'Complete your profile'}
+            Set Your Password
           </h2>
         </div>
         {successMessage ? (
@@ -67,66 +65,33 @@ export default function SignUp() {
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             <div className="rounded-md shadow-sm -space-y-px">
               <div>
-                <label htmlFor="email" className="sr-only">
-                  Email address
+                <label htmlFor="password" className="sr-only">
+                  Password
                 </label>
                 <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
+                  id="password"
+                  name="password"
+                  type="password"
+                  autoComplete="new-password"
                   required
                   className="appearance-none rounded-t-xl relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                  placeholder="Email address"
+                  placeholder="Password"
                 />
               </div>
               <div>
-                <label htmlFor="username" className="sr-only">
-                  Username
+                <label htmlFor="confirmPassword" className="sr-only">
+                  Confirm Password
                 </label>
                 <input
-                  id="username"
-                  name="username"
-                  type="text"
-                  autoComplete="username"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  autoComplete="new-password"
                   required
-                  minLength={3}
-                  className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                  placeholder="Username"
+                  className="appearance-none rounded-b-xl relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  placeholder="Confirm Password"
                 />
               </div>
-              {isInitialSignup && (
-                <>
-                  <div>
-                    <label htmlFor="password" className="sr-only">
-                      Password
-                    </label>
-                    <input
-                      id="password"
-                      name="password"
-                      type="password"
-                      autoComplete="new-password"
-                      required
-                      className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                      placeholder="Password"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="confirmPassword" className="sr-only">
-                      Confirm Password
-                    </label>
-                    <input
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      type="password"
-                      autoComplete="new-password"
-                      required
-                      className="appearance-none rounded-b-xl relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                      placeholder="Confirm Password"
-                    />
-                  </div>
-                </>
-              )}
             </div>
 
             {error && (
@@ -140,17 +105,10 @@ export default function SignUp() {
                 type="submit"
                 className="w-full flex items-center justify-center px-4 py-2 bg-indigo-600 text-white rounded-xl shadow-[0_3px_0_rgb(67,56,202)] text-sm font-bold transition-all duration-150 active:shadow-[0_0_0_rgb(67,56,202)] active:translate-y-[3px] hover:bg-indigo-700"
               >
-                {isInitialSignup ? 'Sign up' : 'Update Profile'}
+                Set Password
               </button>
             </div>
           </form>
-        )}
-        {!isInitialSignup && (
-          <div className="text-center space-y-4">
-            <Link href="/latest/login" className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors duration-200">
-              Already have an account? Log in
-            </Link>
-          </div>
         )}
       </div>
     </div>

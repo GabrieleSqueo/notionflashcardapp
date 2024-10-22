@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, Title } from 'chart.js'
 import { Pie, Line } from 'react-chartjs-2'
-import { MdLightMode, MdDarkMode } from 'react-icons/md'
+import { MdLightMode, MdDarkMode, MdCheckCircle, MdStar, MdTrendingUp } from 'react-icons/md'
 import { useSearchParams, usePathname } from 'next/navigation'
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, Title)
@@ -17,6 +17,10 @@ export default function InsightComponent({ embed_id }) {
   const searchParams = useSearchParams()
   const pathname = usePathname()
   const chartRef = useRef(null);
+  const [todayTasks, setTodayTasks] = useState({
+    learningMode: { count: 0, completed: false },
+    flashcardChecks: { count: 0, completed: false }
+  })
 
   useEffect(() => {
     async function fetchData() {
@@ -30,6 +34,17 @@ export default function InsightComponent({ embed_id }) {
           throw new Error(data.error);
         }
         setInsightData(data.scoresData);
+        
+        // Process today's tasks
+        const today = new Date().setHours(0, 0, 0, 0);
+        const todayData = data.scoresData.filter(session => new Date(session.date).setHours(0, 0, 0, 0) === today);
+        const learningModeCount = todayData.length;
+        const flashcardChecksCount = todayData.reduce((sum, session) => sum + session.scores.length, 0);
+
+        setTodayTasks({
+          learningMode: { count: learningModeCount, completed: learningModeCount >= 4 },
+          flashcardChecks: { count: flashcardChecksCount, completed: flashcardChecksCount >= 4 }
+        });
       } catch (error) {
         console.error('Error in fetchData:', error);
         setError(error.message);
@@ -176,7 +191,6 @@ export default function InsightComponent({ embed_id }) {
     const ChartComponent = chartType === 'pie' ? Pie : Line;
     return (
       <div className="w-full h-[50vh]">
-        <h3 className="text-center mb-2 text-lg font-bold">{title}</h3>
         <ChartComponent ref={chartRef} data={data} options={chartOptions} />
       </div>
     );
@@ -195,8 +209,56 @@ export default function InsightComponent({ embed_id }) {
     </button>
   );
 
+  const TodaysTasks = () => (
+    <div className="w-full md:w-1/2 bg-white rounded-xl shadow-lg p-6">
+      <h3 className="text-2xl font-bold mb-4 text-indigo-600">Today's Quests</h3>
+      <ul className="space-y-4">
+        <li className="flex items-center">
+          <span className={`mr-2 text-3xl ${todayTasks.learningMode.completed ? 'text-yellow-400' : 'text-gray-300'}`}>
+            <MdStar />
+          </span>
+          <span className="text-lg text-gray-700">
+            Use learning mode 4 times ({todayTasks.learningMode.count}/4)
+          </span>
+        </li>
+        <li className="flex items-center">
+          <span className={`mr-2 text-3xl ${todayTasks.flashcardChecks.completed ? 'text-yellow-400' : 'text-gray-300'}`}>
+            <MdStar />
+          </span>
+          <span className="text-lg text-gray-700">
+            Check flashcards 4 times ({todayTasks.flashcardChecks.count}/4)
+          </span>
+        </li>
+      </ul>
+    </div>
+  );
+
+  const PerformanceStats = () => (
+    <div className="w-full md:w-1/2 bg-white rounded-xl shadow-lg p-6">
+      <h3 className="text-2xl font-bold mb-4 text-indigo-600">Your Stats</h3>
+      <ul className="space-y-4">
+        <li className="flex items-center">
+          <span className="mr-2 text-3xl text-red-500">
+            <MdTrendingUp />
+          </span>
+          <span className="text-lg text-gray-700">
+            Learning Streak: {processedData.length} days
+          </span>
+        </li>
+        <li className="flex items-center">
+          <span className="mr-2 text-3xl text-green-500">
+            <MdCheckCircle />
+          </span>
+          <span className="text-lg text-gray-700">
+            Total Flashcards Reviewed: {processedData.reduce((sum, day) => sum + day.scores.length, 0)}
+          </span>
+        </li>
+      </ul>
+    </div>
+  );
+
   return (
-    <div className={`relative flex flex-col items-center justify-between w-full min-h-screen p-4 transition-colors duration-300 ${isDarkMode ? 'bg-[#191919] text-white' : 'bg-white text-gray-900'}`}>
+    <div className={`relative flex flex-col items-center justify-between w-full min-h-screen p-4 transition-colors duration-300 ${isDarkMode ? 'bg-indigo-900 text-white' : 'bg-indigo-100 text-gray-900'}`}>
       <div className="w-full flex justify-between items-center mb-4">
         <div className="flex space-x-4">
           <SectionButton section="today" text="Today" />
@@ -213,18 +275,28 @@ export default function InsightComponent({ embed_id }) {
       <div className="w-full max-w-4xl flex-grow flex flex-col justify-center items-center">
         <div className="w-full">
           {activeSection === 'today' ? (
-            <div className="w-full flex justify-center">
-              {todayPerformance ? (
-                renderChart('pie', todayPerformance, "Today's Performance")
-              ) : (
-                <div className="flex items-center justify-center h-full">
-                  <p className="text-center">No data available for today</p>
-                </div>
-              )}
+            <div className="w-full flex flex-col md:flex-row justify-center items-start gap-8">
+              <div className="w-full md:w-1/2">
+                {todayPerformance ? (
+                  <div className="bg-white rounded-xl shadow-lg p-6">
+                    <h3 className="text-2xl font-bold mb-4 text-indigo-600">Today's Performance</h3>
+                    {renderChart('pie', todayPerformance)}
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center h-full bg-white rounded-xl shadow-lg p-6">
+                    <p className="text-center text-lg text-gray-600">No data available for today</p>
+                  </div>
+                )}
+              </div>
+              <TodaysTasks />
             </div>
           ) : (
-            <div className="w-full">
-              {renderChart('line', lineData, 'Performance Over Time')}
+            <div className="w-full flex flex-col md:flex-row justify-center items-start gap-8">
+              <div className="w-full md:w-1/2 bg-white rounded-xl shadow-lg p-6">
+                <h3 className="text-2xl font-bold mb-4 text-indigo-600">Performance Over Time</h3>
+                {renderChart('line', lineData)}
+              </div>
+              <PerformanceStats />
             </div>
           )}
         </div>
